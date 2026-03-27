@@ -1,0 +1,164 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FloatingIcons from '../components/FloatingIcons.astro';
+
+const badgeStyles: Record<string, string> = {
+  feature: 'bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20',
+  fix: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20',
+  improvement: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-500/20',
+  breaking: 'bg-red-500/10 text-red-700 dark:text-red-400 border border-red-500/20',
+};
+
+const entries = [
+  {
+    date: 'March 15, 2026',
+    version: 'v1.2.0',
+    badges: ['feature', 'improvement'],
+    title: 'Real-time driver tracking & batch orders',
+    items: [
+      'Added WebSocket endpoint for live driver location updates',
+      'New batch order creation endpoint (POST /v1/orders/batch)',
+      'Improved rate limit headers with retry-after support',
+      'Dashboard now shows webhook delivery logs',
+    ],
+  },
+  {
+    date: 'February 8, 2026',
+    version: 'v1.1.0',
+    badges: ['feature', 'fix'],
+    title: 'Webhook management & bug fixes',
+    items: [
+      'Webhook CRUD endpoints now available',
+      'Added restaurant menu endpoint (GET /v1/restaurants/:id/menu)',
+      'Fixed order status not updating for cancelled orders',
+      'Fixed timezone handling in delivery estimates',
+    ],
+  },
+  {
+    date: 'January 10, 2026',
+    version: 'v1.0.0',
+    badges: ['feature'],
+    title: 'Initial public release',
+    items: [
+      'Orders API: create, list, retrieve, and cancel orders',
+      'Restaurants API: browse restaurants and menus',
+      'Drivers API: retrieve driver info and location',
+      'Authentication via API keys with Bearer token scheme',
+      'Sandbox environment available for testing',
+    ],
+  },
+];
+---
+
+<Layout title="Changelog - BipBip Developer Portal" description="Latest updates, new features, and bug fixes for the BipBip API.">
+  <div class="relative mx-auto max-w-3xl px-6 py-16 overflow-hidden">
+    <FloatingIcons density="sparse" />
+    <h1 class="text-4xl font-bold tracking-tight text-neutral-900 dark:text-white">Changelog</h1>
+    <p class="mt-3 text-lg text-neutral-600 dark:text-neutral-400">
+      Latest updates, new features, and bug fixes for the BipBip API.
+    </p>
+
+    <div class="mt-12 relative" id="changelog-timeline">
+      <!-- Animated draw line -->
+      <div class="absolute left-0 top-0 w-0.5 bg-neutral-200/30 dark:bg-border-dark/30 h-full"></div>
+      <div id="timeline-draw-line" class="absolute left-0 top-0 w-0.5 bg-gradient-to-b from-bipbip-red to-bipbip-orange" style="height: 0; transition: height 50ms linear"></div>
+
+      {entries.map((entry, index) => (
+        <div
+          class:list={[
+            'timeline-entry relative pl-8 opacity-0 translate-y-4',
+            index < entries.length - 1 ? 'pb-12' : '',
+          ]}
+          style={'transition: opacity 0.5s ease, transform 0.5s ease; transition-delay: ' + (index * 150) + 'ms'}
+        >
+          <div class="timeline-dot absolute -left-[7px] top-0 h-3.5 w-3.5 rounded-full border-2 border-neutral-300 dark:border-border-dark bg-surface-light dark:bg-surface-dark transition-all duration-300" />
+
+          <div class="flex flex-wrap items-center gap-3">
+            <time class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              {entry.date}
+            </time>
+            <span class="rounded-full bg-bipbip-red/10 px-2.5 py-0.5 text-xs font-semibold text-bipbip-red">
+              {entry.version}
+            </span>
+          </div>
+
+          <div class="mt-2 flex flex-wrap gap-2">
+            {entry.badges.map((badge) => (
+              <span
+                class:list={[
+                  'rounded-full px-2.5 py-0.5 text-xs font-medium capitalize',
+                  badgeStyles[badge] ?? '',
+                ]}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
+
+          <h3 class="mt-3 text-lg font-semibold text-neutral-900 dark:text-white">
+            {entry.title}
+          </h3>
+
+          <ul class="mt-3 space-y-2">
+            {entry.items.map((item) => (
+              <li class="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-neutral-400 dark:bg-neutral-600" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<script is:inline>
+  (function() {
+    var timeline = document.getElementById('changelog-timeline');
+    var drawLine = document.getElementById('timeline-draw-line');
+    var entries = document.querySelectorAll('.timeline-entry');
+    if (!timeline || !drawLine || !entries.length) return;
+
+    var entryObserver = new IntersectionObserver(function(observed) {
+      observed.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+
+          // Activate dot
+          var dot = el.querySelector('.timeline-dot');
+          if (dot) {
+            dot.style.borderColor = 'var(--color-bipbip-red)';
+            dot.style.backgroundColor = 'var(--color-bipbip-red)';
+            dot.style.boxShadow = '0 0 8px rgba(227, 6, 19, 0.4)';
+          }
+
+          entryObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    entries.forEach(function(e) { entryObserver.observe(e); });
+
+    // Draw line on scroll
+    var timelineObserver = new IntersectionObserver(function(observed) {
+      if (observed[0].isIntersecting) {
+        window.addEventListener('scroll', updateLine, { passive: true });
+        updateLine();
+      }
+    }, { threshold: 0 });
+
+    timelineObserver.observe(timeline);
+
+    function updateLine() {
+      var rect = timeline.getBoundingClientRect();
+      var timelineTop = rect.top;
+      var timelineHeight = rect.height;
+      var viewportMiddle = window.innerHeight * 0.6;
+      var drawn = Math.max(0, Math.min(viewportMiddle - timelineTop, timelineHeight));
+      drawLine.style.height = drawn + 'px';
+    }
+  })();
+</script>

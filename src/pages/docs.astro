@@ -1,0 +1,216 @@
+---
+import DocsLayout from '../components/docs/DocsLayout.astro';
+import SidebarGroup from '../components/docs/SidebarGroup.astro';
+import SidebarLink from '../components/docs/SidebarLink.astro';
+import CodeBlock from '../components/docs/CodeBlock.astro';
+import Callout from '../components/docs/Callout.astro';
+
+const authHeaderHtml = `<span class="text-neutral-400 dark:text-neutral-500"># Include this header in every request</span>
+<span class="text-bipbip-red dark:text-bipbip-yellow">curl</span> <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"Authorization: Bearer YOUR_API_KEY"</span> <span class="text-neutral-500 dark:text-neutral-400">\\</span>
+     <span class="text-green-700 dark:text-green-400">https://api.bipbip.hn/v1/restaurants</span>`;
+
+const firstRequestHtml = `<span class="text-neutral-400 dark:text-neutral-500"># Fetch a list of restaurants</span>
+<span class="text-bipbip-red dark:text-bipbip-yellow">curl</span> <span class="text-neutral-500 dark:text-neutral-400">-X GET</span> <span class="text-green-700 dark:text-green-400">https://api.bipbip.hn/v1/restaurants</span> <span class="text-neutral-500 dark:text-neutral-400">\\</span>
+  <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"Authorization: Bearer YOUR_API_KEY"</span> <span class="text-neutral-500 dark:text-neutral-400">\\</span>
+  <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"Content-Type: application/json"</span>`;
+
+const firstResponseHtml = `{
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Pollo Campero Centro"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"city"</span>: <span class="text-green-700 dark:text-green-400">"Tegucigalpa"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"is_active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+    }
+  ],
+  <span class="text-blue-600 dark:text-blue-400">"has_more"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+}`;
+
+const rateLimitErrorHtml = `{
+  <span class="text-blue-600 dark:text-blue-400">"error"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"code"</span>: <span class="text-green-700 dark:text-green-400">"rate_limit_exceeded"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Too many requests. Retry after 60 seconds."</span>,
+    <span class="text-blue-600 dark:text-blue-400">"retry_after"</span>: <span class="text-amber-600 dark:text-amber-400">60</span>
+  }
+}`;
+---
+
+<DocsLayout title="Getting Started">
+  <Fragment slot="sidebar">
+    <SidebarGroup title="Getting Started">
+      <SidebarLink href="#introduction">Introduction</SidebarLink>
+      <SidebarLink href="#authentication">Authentication</SidebarLink>
+      <SidebarLink href="#first-request">First Request</SidebarLink>
+      <SidebarLink href="#environments">Environments</SidebarLink>
+      <SidebarLink href="#rate-limits">Rate Limits</SidebarLink>
+    </SidebarGroup>
+  </Fragment>
+
+  <!-- Introduction -->
+  <section id="introduction" class="scroll-mt-24">
+    <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Getting Started
+    </h1>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      The BipBip API gives you programmatic access to manage orders, restaurants,
+      drivers, and real-time tracking across our delivery network. Whether you are
+      building an integration for your restaurant, a dispatch dashboard, or a
+      third-party logistics tool, this guide will help you get up and running in
+      minutes.
+    </p>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Base URL for all API requests:
+    </p>
+    <p class="mt-2">
+      <code class="rounded-md bg-neutral-100 dark:bg-surface-dark-elevated px-3 py-1.5 text-sm font-mono font-medium text-bipbip-red dark:text-bipbip-yellow">
+        https://api.bipbip.hn/v1
+      </code>
+    </p>
+
+    <Callout type="info">
+      <Fragment slot="title">JSON everywhere</Fragment>
+      All requests and responses use JSON format. Make sure to include the
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">Content-Type: application/json</code>
+      header in your requests.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Authentication -->
+  <section id="authentication" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Authentication
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Every request to the BipBip API must include a Bearer token in the
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">Authorization</code>
+      header. You can generate API keys from your developer dashboard.
+    </p>
+
+    <CodeBlock filename="auth-header.sh" code={authHeaderHtml} />
+
+    <Callout type="warning">
+      <Fragment slot="title">Protect your keys</Fragment>
+      Keep your API keys safe — never expose them in client-side code, public
+      repositories, or frontend bundles. Use environment variables and
+      server-side proxies instead.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- First Request -->
+  <section id="first-request" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Your First Request
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Let's make your first API call by fetching a list of restaurants. Replace
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">YOUR_API_KEY</code>
+      with your actual key.
+    </p>
+
+    <CodeBlock filename="first-request.sh" code={firstRequestHtml} />
+
+    <p class="text-neutral-600 dark:text-neutral-400">
+      A successful response returns a paginated list of restaurant objects:
+    </p>
+
+    <CodeBlock filename="response.json" code={firstResponseHtml} />
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Environments -->
+  <section id="environments" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Environments
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      BipBip provides two environments so you can develop and test without
+      affecting production data.
+    </p>
+
+    <div class="my-6 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-neutral-200 dark:border-border-dark">
+            <th class="py-3 pr-4 text-left font-semibold text-neutral-900 dark:text-white">Environment</th>
+            <th class="py-3 pr-4 text-left font-semibold text-neutral-900 dark:text-white">Base URL</th>
+            <th class="py-3 text-left font-semibold text-neutral-900 dark:text-white">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-neutral-100 dark:border-border-dark/50">
+            <td class="py-3 pr-4 font-medium text-neutral-900 dark:text-white">Production</td>
+            <td class="py-3 pr-4">
+              <code class="text-sm font-mono text-bipbip-red dark:text-bipbip-yellow">api.bipbip.hn</code>
+            </td>
+            <td class="py-3 text-neutral-600 dark:text-neutral-400">Live data — real orders and transactions</td>
+          </tr>
+          <tr class="border-b border-neutral-100 dark:border-border-dark/50">
+            <td class="py-3 pr-4 font-medium text-neutral-900 dark:text-white">Sandbox</td>
+            <td class="py-3 pr-4">
+              <code class="text-sm font-mono text-bipbip-red dark:text-bipbip-yellow">sandbox.bipbip.hn</code>
+            </td>
+            <td class="py-3 text-neutral-600 dark:text-neutral-400">Test data — safe for development</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <Callout type="info">
+      <Fragment slot="title">Sandbox data</Fragment>
+      The sandbox environment comes pre-loaded with test restaurants, drivers,
+      and sample orders. API keys are separate per environment — make sure you
+      are using the right key.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Rate Limits -->
+  <section id="rate-limits" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Rate Limits
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      To ensure fair usage and platform stability, all API endpoints are rate
+      limited. Limits are applied per API key and reset every minute.
+    </p>
+
+    <div class="my-6 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-neutral-200 dark:border-border-dark">
+            <th class="py-3 pr-4 text-left font-semibold text-neutral-900 dark:text-white">Endpoint Type</th>
+            <th class="py-3 text-left font-semibold text-neutral-900 dark:text-white">Limit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-neutral-100 dark:border-border-dark/50">
+            <td class="py-3 pr-4 text-neutral-600 dark:text-neutral-400">Standard endpoints</td>
+            <td class="py-3 font-mono text-sm text-neutral-900 dark:text-white">1,000 requests / min</td>
+          </tr>
+          <tr class="border-b border-neutral-100 dark:border-border-dark/50">
+            <td class="py-3 pr-4 text-neutral-600 dark:text-neutral-400">Webhook endpoints</td>
+            <td class="py-3 font-mono text-sm text-neutral-900 dark:text-white">100 requests / min</td>
+          </tr>
+          <tr class="border-b border-neutral-100 dark:border-border-dark/50">
+            <td class="py-3 pr-4 text-neutral-600 dark:text-neutral-400">Tracking endpoints</td>
+            <td class="py-3 font-mono text-sm text-neutral-900 dark:text-white">5,000 requests / min</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-neutral-600 dark:text-neutral-400">
+      When you exceed the limit, the API returns a
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">429 Too Many Requests</code>
+      response:
+    </p>
+
+    <CodeBlock filename="rate-limit-error.json" code={rateLimitErrorHtml} />
+  </section>
+</DocsLayout>

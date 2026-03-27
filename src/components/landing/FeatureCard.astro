@@ -1,0 +1,21 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<div class="tilt-card group relative rounded-xl border border-neutral-200 dark:border-border-dark bg-white dark:bg-surface-dark-raised p-6 transition-all duration-300 hover:border-bipbip-red/30 dark:hover:border-bipbip-red/30 hover:shadow-xl hover:shadow-bipbip-red/5 dark:hover:shadow-bipbip-red/5 overflow-hidden cursor-default" style="transform-style: preserve-3d">
+  <!-- Shine overlay -->
+  <div class="tilt-shine pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(227,6,19,0.15), transparent 50%)"></div>
+
+  <div class="relative" style="transform: translateZ(20px)">
+    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-bipbip-red/5 dark:bg-bipbip-red/10 text-bipbip-red transition-transform duration-300 group-hover:scale-110">
+      <slot />
+    </div>
+    <h3 class="text-base font-semibold text-neutral-900 dark:text-white">{title}</h3>
+    <p class="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{description}</p>
+  </div>
+</div>

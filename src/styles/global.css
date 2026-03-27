@@ -1,0 +1,102 @@
+@import "tailwindcss";
+@import "@fontsource/poppins/300.css";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@custom-variant dark (&.dark);
+
+@theme {
+  --font-sans: "Poppins", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-bipbip-red: #E30613;
+  --color-bipbip-red-dark: #C7001A;
+  --color-bipbip-red-darker: #940013;
+  --color-bipbip-yellow: #FDC300;
+  --color-bipbip-yellow-warm: #FBBA00;
+  --color-bipbip-orange: #F68524;
+  --color-bipbip-black: #000000;
+  --color-bipbip-white: #FFFFFF;
+
+  --color-surface-dark: #0A0A0B;
+  --color-surface-dark-raised: #141415;
+  --color-surface-dark-elevated: #1E1E20;
+  --color-border-dark: #2A2A2D;
+  --color-surface-light: #FFFFFF;
+  --color-surface-light-raised: #F7F7F8;
+}
+
+/* Scroll animations */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+[data-animate][data-visible] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero typewriter cursor */
+.hero-cursor {
+  animation: hero-cursor-blink 1s step-end infinite;
+}
+
+@keyframes hero-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Hero orb floating */
+@keyframes hero-orb-float {
+  0%, 100% { transform: translate(-50%, 0) scale(1); }
+  50% { transform: translate(-50%, -20px) scale(1.05); }
+}
+
+@keyframes hero-orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(15px, -15px) scale(1.03); }
+}
+
+/* Floating brand icons */
+@keyframes float-icon-1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(10px, -15px) rotate(5deg); }
+  50% { transform: translate(-5px, -25px) rotate(-3deg); }
+  75% { transform: translate(-15px, -10px) rotate(4deg); }
+}
+
+@keyframes float-icon-2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(-12px, -20px) rotate(-6deg); }
+  66% { transform: translate(8px, -12px) rotate(4deg); }
+}
+
+@keyframes float-icon-3 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(15px, -18px) rotate(8deg); }
+}
+
+/* CTA logo pulse */
+@keyframes logo-pulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.05); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hero-cursor {
+    animation: none !important;
+  }
+
+  [data-animate] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

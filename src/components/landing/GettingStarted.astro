@@ -1,0 +1,66 @@
+---
+import { AppIcon } from '../icons';
+
+const steps = [
+  {
+    number: '1',
+    title: 'Create an account',
+    description: 'Sign up for a BipBip developer account and get your API keys instantly.',
+  },
+  {
+    number: '2',
+    title: 'Make your first call',
+    description: 'Test the API in sandbox mode with our interactive documentation.',
+  },
+  {
+    number: '3',
+    title: 'Go live',
+    description: 'Switch to production credentials and launch your integration.',
+  },
+];
+---
+
+<section class="relative mx-auto max-w-6xl px-6 py-24 overflow-hidden" data-animate>
+  <!-- Background illustration: delivery -->
+  <img
+    src="/iconografia/renderizado-3d-icono-entrega 1.svg"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute -left-8 top-1/2 -translate-y-1/2 w-72 h-72 opacity-[0.10] dark:opacity-[0.06] -rotate-12"
+  />
+
+  <div class="relative">
+    <div class="text-center">
+      <h2 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+        Get started in three steps
+      </h2>
+    </div>
+
+    <div class="mt-16 grid gap-8 sm:grid-cols-3">
+      {steps.map((step, i) => (
+        <div class="text-center">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange text-lg font-bold text-white shadow-lg shadow-bipbip-red/20">
+            {step.number}
+          </div>
+          <h3 class="mt-5 text-base font-semibold text-neutral-900 dark:text-white">
+            {step.title}
+          </h3>
+          <p class="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            {step.description}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- App icon showcase -->
+    <div class="mt-16 flex items-center justify-center gap-4">
+      <div class="flex items-center gap-3 rounded-xl border border-neutral-200 dark:border-border-dark bg-white dark:bg-surface-dark-raised px-5 py-3">
+        <AppIcon width={40} height={40} class="rounded-lg" />
+        <div>
+          <p class="text-sm font-semibold text-neutral-900 dark:text-white">BipBip Dashboard</p>
+          <p class="text-xs text-neutral-500">Manage your API keys & analytics</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

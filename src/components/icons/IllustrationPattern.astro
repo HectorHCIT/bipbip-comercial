@@ -1,0 +1,19 @@
+---
+interface Props {
+  class?: string;
+  width?: number;
+  height?: number;
+  alt?: string;
+}
+
+const { class: className, width, height, alt = 'BipBip brand pattern', ...attrs } = Astro.props;
+---
+
+<img
+  src="/iconografia/Patron.svg"
+  alt={alt}
+  width={width}
+  height={height}
+  class={className}
+  {...attrs}
+/>

@@ -1,0 +1,306 @@
+---
+import DocsLayout from '../components/docs/DocsLayout.astro';
+import SidebarGroup from '../components/docs/SidebarGroup.astro';
+import SidebarLink from '../components/docs/SidebarLink.astro';
+import EndpointCard from '../components/docs/EndpointCard.astro';
+import Callout from '../components/docs/Callout.astro';
+
+const listOrdersResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_abc123"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"in_progress"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"total"</span>: <span class="text-amber-600 dark:text-amber-400">245.50</span>,
+      <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T14:30:00Z"</span>
+    }
+  ],
+  <span class="text-blue-600 dark:text-blue-400">"has_more"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+}`;
+
+const createOrderResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_def456"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"pending"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"items"</span>: <span class="text-amber-600 dark:text-amber-400">3</span>,
+  <span class="text-blue-600 dark:text-blue-400">"total"</span>: <span class="text-amber-600 dark:text-amber-400">189.00</span>,
+  <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-26T10:15:00Z"</span>
+}`;
+
+const getOrderResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_abc123"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"in_progress"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"driver_id"</span>: <span class="text-green-700 dark:text-green-400">"drv_m4n5o6"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"total"</span>: <span class="text-amber-600 dark:text-amber-400">245.50</span>,
+  <span class="text-blue-600 dark:text-blue-400">"estimated_delivery"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T15:00:00Z"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T14:30:00Z"</span>
+}`;
+
+const cancelOrderResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_abc123"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"cancelled"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"cancelled_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T14:45:00Z"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"cancellation_reason"</span>: <span class="text-green-700 dark:text-green-400">"customer_request"</span>
+}`;
+
+const listRestaurantsResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Pollo Campero Centro"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"city"</span>: <span class="text-green-700 dark:text-green-400">"Tegucigalpa"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"is_active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+    }
+  ],
+  <span class="text-blue-600 dark:text-blue-400">"has_more"</span>: <span class="text-purple-600 dark:text-purple-400">false</span>
+}`;
+
+const getRestaurantResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Pollo Campero Centro"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"city"</span>: <span class="text-green-700 dark:text-green-400">"Tegucigalpa"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"address"</span>: <span class="text-green-700 dark:text-green-400">"Blvd Morazán, Tegucigalpa"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"is_active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>,
+  <span class="text-blue-600 dark:text-blue-400">"rating"</span>: <span class="text-amber-600 dark:text-amber-400">4.7</span>
+}`;
+
+const getMenuResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"categories"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Combos"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"items_count"</span>: <span class="text-amber-600 dark:text-amber-400">12</span>
+    }
+  ]
+}`;
+
+const getDriverResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"drv_m4n5o6"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Carlos Martínez"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"on_delivery"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"vehicle_type"</span>: <span class="text-green-700 dark:text-green-400">"motorcycle"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"rating"</span>: <span class="text-amber-600 dark:text-amber-400">4.9</span>
+}`;
+
+const getDriverLocationResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"driver_id"</span>: <span class="text-green-700 dark:text-green-400">"drv_m4n5o6"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"latitude"</span>: <span class="text-amber-600 dark:text-amber-400">14.0723</span>,
+  <span class="text-blue-600 dark:text-blue-400">"longitude"</span>: <span class="text-amber-600 dark:text-amber-400">-87.1921</span>,
+  <span class="text-blue-600 dark:text-blue-400">"heading"</span>: <span class="text-amber-600 dark:text-amber-400">245</span>,
+  <span class="text-blue-600 dark:text-blue-400">"updated_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-26T10:30:05Z"</span>
+}`;
+
+const createWebhookResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"whk_p7q8r9"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"url"</span>: <span class="text-green-700 dark:text-green-400">"https://example.com/webhooks/bipbip"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"events"</span>: [<span class="text-green-700 dark:text-green-400">"order.created"</span>, <span class="text-green-700 dark:text-green-400">"order.delivered"</span>],
+  <span class="text-blue-600 dark:text-blue-400">"active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>,
+  <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-26T09:00:00Z"</span>
+}`;
+
+const listWebhooksResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"whk_p7q8r9"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"url"</span>: <span class="text-green-700 dark:text-green-400">"https://example.com/webhooks/bipbip"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"events"</span>: [<span class="text-green-700 dark:text-green-400">"order.created"</span>, <span class="text-green-700 dark:text-green-400">"order.delivered"</span>],
+      <span class="text-blue-600 dark:text-blue-400">"active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+    }
+  ]
+}`;
+
+const deleteWebhookResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"whk_p7q8r9"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"deleted"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+}`;
+---
+
+<DocsLayout title="API Reference">
+  <Fragment slot="sidebar">
+    <SidebarGroup title="Orders">
+      <SidebarLink href="#get-v1-orders" method="GET">/v1/orders</SidebarLink>
+      <SidebarLink href="#post-v1-orders" method="POST">/v1/orders</SidebarLink>
+      <SidebarLink href="#get-v1-orders-id" method="GET">/v1/orders/:id</SidebarLink>
+      <SidebarLink href="#put-v1-orders-id-cancel" method="PUT">/v1/orders/:id/cancel</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Restaurants">
+      <SidebarLink href="#get-v1-restaurants" method="GET">/v1/restaurants</SidebarLink>
+      <SidebarLink href="#get-v1-restaurants-id" method="GET">/v1/restaurants/:id</SidebarLink>
+      <SidebarLink href="#get-v1-restaurants-id-menu" method="GET">/v1/restaurants/:id/menu</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Drivers">
+      <SidebarLink href="#get-v1-drivers-id" method="GET">/v1/drivers/:id</SidebarLink>
+      <SidebarLink href="#get-v1-drivers-id-location" method="GET">/v1/drivers/:id/location</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Webhooks">
+      <SidebarLink href="#post-v1-webhooks" method="POST">/v1/webhooks</SidebarLink>
+      <SidebarLink href="#get-v1-webhooks" method="GET">/v1/webhooks</SidebarLink>
+      <SidebarLink href="#delete-v1-webhooks-id" method="DELETE">/v1/webhooks/:id</SidebarLink>
+    </SidebarGroup>
+  </Fragment>
+
+  <!-- Header -->
+  <section id="api-reference" class="scroll-mt-24">
+    <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      API Reference
+    </h1>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      Complete reference for all BipBip API endpoints. Each endpoint includes the
+      HTTP method, path, description, and an example response.
+    </p>
+
+    <Callout type="info">
+      <Fragment slot="title">Base URL</Fragment>
+      All endpoints are relative to
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">https://api.bipbip.hn/v1</code>
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Orders -->
+  <section id="orders" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Orders
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Create, retrieve, list, and cancel delivery orders. Orders represent a
+      customer purchase from a restaurant, assigned to a driver for delivery.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="GET"
+        path="/v1/orders"
+        description="List all orders with optional filters for status, date range, and restaurant. Returns a paginated list sorted by creation date."
+        responseCode={listOrdersResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/v1/orders"
+        description="Create a new delivery order. Requires a restaurant ID, delivery address, and at least one item. Returns the created order with a pending status."
+        responseCode={createOrderResponse}
+      />
+
+      <EndpointCard
+        method="GET"
+        path="/v1/orders/:id"
+        description="Retrieve a single order by its unique ID. Includes full order details, current status, assigned driver, and delivery estimates."
+        responseCode={getOrderResponse}
+      />
+
+      <EndpointCard
+        method="PUT"
+        path="/v1/orders/:id/cancel"
+        description="Cancel an active order. Only orders with status pending or accepted can be cancelled. Requires a cancellation reason."
+        responseCode={cancelOrderResponse}
+      />
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Restaurants -->
+  <section id="restaurants" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Restaurants
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Browse restaurants, retrieve details, and access menus. Restaurants are the
+      merchant partners on the BipBip platform.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="GET"
+        path="/v1/restaurants"
+        description="List all restaurants with optional filters for city, active status, and cuisine type. Returns a paginated list."
+        responseCode={listRestaurantsResponse}
+      />
+
+      <EndpointCard
+        method="GET"
+        path="/v1/restaurants/:id"
+        description="Retrieve detailed information about a restaurant including address, operating hours, rating, and active status."
+        responseCode={getRestaurantResponse}
+      />
+
+      <EndpointCard
+        method="GET"
+        path="/v1/restaurants/:id/menu"
+        description="Retrieve the full menu for a restaurant, organized by categories with item details and pricing."
+        responseCode={getMenuResponse}
+      />
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Drivers -->
+  <section id="drivers" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Drivers
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Access driver profiles and real-time location data. Drivers are the delivery
+      partners who pick up and deliver orders.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="GET"
+        path="/v1/drivers/:id"
+        description="Retrieve a driver's profile including name, vehicle type, current status, and rating."
+        responseCode={getDriverResponse}
+      />
+
+      <EndpointCard
+        method="GET"
+        path="/v1/drivers/:id/location"
+        description="Get the real-time GPS location of a driver. Returns latitude, longitude, heading, and last update timestamp."
+        responseCode={getDriverLocationResponse}
+      />
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Webhooks -->
+  <section id="webhooks" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Webhooks
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Subscribe to real-time event notifications. Webhooks push updates to your
+      server when order statuses change, deliveries complete, and more.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="POST"
+        path="/v1/webhooks"
+        description="Register a new webhook endpoint. Provide a URL and a list of event types to subscribe to."
+        responseCode={createWebhookResponse}
+      />
+
+      <EndpointCard
+        method="GET"
+        path="/v1/webhooks"
+        description="List all registered webhook endpoints for your account, including their event subscriptions and active status."
+        responseCode={listWebhooksResponse}
+      />
+
+      <EndpointCard
+        method="DELETE"
+        path="/v1/webhooks/:id"
+        description="Remove a webhook subscription. The endpoint will stop receiving event notifications immediately."
+        responseCode={deleteWebhookResponse}
+      />
+    </div>
+  </section>
+</DocsLayout>

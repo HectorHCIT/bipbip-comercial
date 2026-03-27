@@ -1,0 +1,88 @@
+---
+import TabbedCode from '../docs/TabbedCode.astro';
+import FloatingIcons from '../FloatingIcons.astro';
+
+const curlCode = `<span class="text-neutral-400 dark:text-neutral-500"># Create a new delivery order</span>
+<span class="text-bipbip-red dark:text-bipbip-yellow">curl</span> <span class="text-neutral-500 dark:text-neutral-400">-X POST</span> https://api.bipbip.hn/v1/orders <span class="text-neutral-500 dark:text-neutral-400">\\</span>
+  <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"Authorization: Bearer sk_live_..."</span> <span class="text-neutral-500 dark:text-neutral-400">\\</span>
+  <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"Content-Type: application/json"</span> <span class="text-neutral-500 dark:text-neutral-400">\\</span>
+  <span class="text-neutral-500 dark:text-neutral-400">-d</span> <span class="text-green-700 dark:text-green-400">'{
+    "restaurant_id": "rst_a1b2c3",
+    "items": [{"id": "item_x7y8z9", "qty": 2}],
+    "delivery_address": {
+      "lat": 14.0723,
+      "lng": -87.1921
+    }
+  }'</span>`;
+
+const jsCode = `<span class="text-blue-600 dark:text-blue-400">const</span> response = <span class="text-blue-600 dark:text-blue-400">await</span> <span class="text-amber-600 dark:text-amber-400">fetch</span>(<span class="text-green-700 dark:text-green-400">'https://api.bipbip.hn/v1/orders'</span>, {
+  <span class="text-blue-600 dark:text-blue-400">method</span>: <span class="text-green-700 dark:text-green-400">'POST'</span>,
+  <span class="text-blue-600 dark:text-blue-400">headers</span>: {
+    <span class="text-green-700 dark:text-green-400">'Authorization'</span>: <span class="text-green-700 dark:text-green-400">'Bearer sk_live_...'</span>,
+    <span class="text-green-700 dark:text-green-400">'Content-Type'</span>: <span class="text-green-700 dark:text-green-400">'application/json'</span>,
+  },
+  <span class="text-blue-600 dark:text-blue-400">body</span>: <span class="text-amber-600 dark:text-amber-400">JSON</span>.<span class="text-amber-600 dark:text-amber-400">stringify</span>({
+    <span class="text-blue-600 dark:text-blue-400">restaurant_id</span>: <span class="text-green-700 dark:text-green-400">'rst_a1b2c3'</span>,
+    <span class="text-blue-600 dark:text-blue-400">items</span>: [{ <span class="text-blue-600 dark:text-blue-400">id</span>: <span class="text-green-700 dark:text-green-400">'item_x7y8z9'</span>, <span class="text-blue-600 dark:text-blue-400">qty</span>: <span class="text-amber-600 dark:text-amber-400">2</span> }],
+    <span class="text-blue-600 dark:text-blue-400">delivery_address</span>: {
+      <span class="text-blue-600 dark:text-blue-400">lat</span>: <span class="text-amber-600 dark:text-amber-400">14.0723</span>,
+      <span class="text-blue-600 dark:text-blue-400">lng</span>: <span class="text-amber-600 dark:text-amber-400">-87.1921</span>,
+    },
+  }),
+});
+
+<span class="text-blue-600 dark:text-blue-400">const</span> order = <span class="text-blue-600 dark:text-blue-400">await</span> response.<span class="text-amber-600 dark:text-amber-400">json</span>();`;
+
+const pythonCode = `<span class="text-blue-600 dark:text-blue-400">import</span> requests
+
+response = requests.<span class="text-amber-600 dark:text-amber-400">post</span>(
+    <span class="text-green-700 dark:text-green-400">"https://api.bipbip.hn/v1/orders"</span>,
+    <span class="text-blue-600 dark:text-blue-400">headers</span>={
+        <span class="text-green-700 dark:text-green-400">"Authorization"</span>: <span class="text-green-700 dark:text-green-400">"Bearer sk_live_..."</span>,
+        <span class="text-green-700 dark:text-green-400">"Content-Type"</span>: <span class="text-green-700 dark:text-green-400">"application/json"</span>,
+    },
+    <span class="text-blue-600 dark:text-blue-400">json</span>={
+        <span class="text-green-700 dark:text-green-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_a1b2c3"</span>,
+        <span class="text-green-700 dark:text-green-400">"items"</span>: [{<span class="text-green-700 dark:text-green-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"item_x7y8z9"</span>, <span class="text-green-700 dark:text-green-400">"qty"</span>: <span class="text-amber-600 dark:text-amber-400">2</span>}],
+        <span class="text-green-700 dark:text-green-400">"delivery_address"</span>: {
+            <span class="text-green-700 dark:text-green-400">"lat"</span>: <span class="text-amber-600 dark:text-amber-400">14.0723</span>,
+            <span class="text-green-700 dark:text-green-400">"lng"</span>: <span class="text-amber-600 dark:text-amber-400">-87.1921</span>,
+        },
+    },
+)
+
+order = response.<span class="text-amber-600 dark:text-amber-400">json</span>()`;
+
+const tabs = [
+  { label: 'curl', filename: 'create-order.sh', code: curlCode },
+  { label: 'JavaScript', filename: 'create-order.js', code: jsCode },
+  { label: 'Python', filename: 'create-order.py', code: pythonCode },
+];
+---
+
+<section class="relative mx-auto max-w-6xl px-6 py-24 overflow-hidden" data-animate>
+  <FloatingIcons density="sparse" />
+  <div class="grid items-center gap-12 lg:grid-cols-2">
+    <!-- Left: text -->
+    <div>
+      <h2 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+        Ship your first integration in minutes
+      </h2>
+      <p class="mt-4 text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+        Our RESTful API is designed for simplicity. Pick your language, authenticate, and you're live.
+      </p>
+      <a
+        href="/docs"
+        class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-bipbip-red hover:text-bipbip-red-dark transition-colors duration-150"
+      >
+        Read the quickstart guide
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Right: tabbed code block -->
+    <TabbedCode tabs={tabs} />
+  </div>
+</section>

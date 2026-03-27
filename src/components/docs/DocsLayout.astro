@@ -1,0 +1,90 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Layout title={`${title} - BipBip Developers`}>
+  <div class="mx-auto max-w-7xl lg:flex">
+    <!-- Mobile sidebar toggle -->
+    <button
+      id="sidebar-toggle"
+      aria-label="Toggle sidebar navigation"
+      class="lg:hidden fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-bipbip-red text-white shadow-lg shadow-bipbip-red/25 hover:bg-bipbip-red-dark transition-colors"
+    >
+      <svg id="sidebar-open-icon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+      <svg id="sidebar-close-icon" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div id="sidebar-overlay" class="fixed inset-0 z-30 bg-black/50 hidden lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full overflow-y-auto border-r border-neutral-200 dark:border-border-dark bg-surface-light dark:bg-surface-dark pt-20 pb-8 transition-transform duration-300 lg:sticky lg:top-16 lg:z-0 lg:h-[calc(100vh-4rem)] lg:w-64 lg:shrink-0 lg:translate-x-0 lg:pt-8"
+    >
+      <nav class="px-4">
+        <slot name="sidebar" />
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <div class="min-w-0 flex-1 px-6 py-8 lg:px-12 lg:py-10">
+      <slot />
+    </div>
+  </div>
+</Layout>
+
+<script is:inline>
+  const toggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const openIcon = document.getElementById('sidebar-open-icon');
+  const closeIcon = document.getElementById('sidebar-close-icon');
+
+  function toggleSidebar() {
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    sidebar.classList.toggle('translate-x-0', !isOpen);
+    overlay.classList.toggle('hidden', isOpen);
+    openIcon.classList.toggle('hidden', !isOpen);
+    closeIcon.classList.toggle('hidden', isOpen);
+  }
+
+  toggle?.addEventListener('click', toggleSidebar);
+  overlay?.addEventListener('click', toggleSidebar);
+
+  // Active section highlighting
+  const links = document.querySelectorAll('.sidebar-link');
+  const sections = document.querySelectorAll('section[id]');
+
+  if (sections.length > 0) {
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            links.forEach((link) => {
+              const href = link.getAttribute('data-href');
+              if (href === '#' + entry.target.id) {
+                link.classList.add('bg-neutral-100', 'dark:bg-surface-dark-elevated', 'text-neutral-900', 'dark:text-white');
+              } else {
+                link.classList.remove('bg-neutral-100', 'dark:bg-surface-dark-elevated', 'text-neutral-900', 'dark:text-white');
+              }
+            });
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+    sections.forEach((s) => sectionObserver.observe(s));
+  }
+</script>

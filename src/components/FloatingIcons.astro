@@ -1,0 +1,78 @@
+---
+/**
+ * Decorative floating BipBip brand icons.
+ * Scatters lightweight logo SVGs as background decoration.
+ *
+ * Usage: <FloatingIcons /> or <FloatingIcons density="sparse" />
+ */
+interface Props {
+  class?: string;
+  density?: 'sparse' | 'normal' | 'dense';
+}
+
+const { class: className, density = 'normal' } = Astro.props;
+
+const icons = [
+  '/iconografia/Tipo=Primario, Versión=Default.svg',
+  '/iconografia/Tipo=Alternativa, Versión=Amarillo.svg',
+  '/iconografia/Tipo=Alternativa, Versión=Negro.svg',
+  '/iconografia/Tipo=Principal.svg',
+  '/iconografia/Tipo=Secundario.svg',
+  '/iconografia/Tipo=Ternario.svg',
+  '/iconografia/Tipo=Alternativa, Versión=Blanco.svg',
+];
+
+const configs = {
+  sparse: [
+    { icon: 0, top: '8%',  left: '3%',  size: 56, rotate: -15, anim: 1, delay: 0,  opacity: 0.18 },
+    { icon: 3, top: '25%', right: '5%', size: 50, rotate: 12,  anim: 2, delay: -3, opacity: 0.15 },
+    { icon: 1, top: '60%', left: '5%',  size: 46, rotate: -8,  anim: 3, delay: -5, opacity: 0.15 },
+    { icon: 4, top: '75%', right: '4%', size: 52, rotate: 20,  anim: 1, delay: -8, opacity: 0.12 },
+  ],
+  normal: [
+    { icon: 0, top: '5%',  left: '3%',  size: 56, rotate: -12, anim: 1, delay: 0,   opacity: 0.18 },
+    { icon: 3, top: '12%', right: '4%', size: 50, rotate: 15,  anim: 2, delay: -2,  opacity: 0.15 },
+    { icon: 5, top: '30%', left: '6%',  size: 44, rotate: -20, anim: 3, delay: -4,  opacity: 0.13 },
+    { icon: 1, top: '45%', right: '3%', size: 48, rotate: 8,   anim: 1, delay: -6,  opacity: 0.15 },
+    { icon: 4, top: '60%', left: '4%',  size: 46, rotate: 25,  anim: 2, delay: -8,  opacity: 0.13 },
+    { icon: 2, top: '70%', right: '7%', size: 42, rotate: -18, anim: 3, delay: -10, opacity: 0.14 },
+    { icon: 6, top: '85%', left: '8%',  size: 44, rotate: 10,  anim: 1, delay: -12, opacity: 0.12 },
+    { icon: 0, top: '90%', right: '3%', size: 38, rotate: -5,  anim: 2, delay: -14, opacity: 0.10 },
+  ],
+  dense: [
+    { icon: 0, top: '3%',  left: '2%',  size: 60, rotate: -10, anim: 1, delay: 0,   opacity: 0.20 },
+    { icon: 3, top: '5%',  left: '30%', size: 38, rotate: 20,  anim: 3, delay: -1,  opacity: 0.12 },
+    { icon: 5, top: '8%',  right: '3%', size: 54, rotate: 12,  anim: 2, delay: -3,  opacity: 0.18 },
+    { icon: 1, top: '20%', left: '5%',  size: 48, rotate: -22, anim: 2, delay: -4,  opacity: 0.15 },
+    { icon: 4, top: '25%', right: '6%', size: 42, rotate: 18,  anim: 1, delay: -6,  opacity: 0.13 },
+    { icon: 2, top: '35%', left: '10%', size: 50, rotate: -8,  anim: 3, delay: -2,  opacity: 0.15 },
+    { icon: 6, top: '40%', right: '2%', size: 44, rotate: 30,  anim: 2, delay: -8,  opacity: 0.12 },
+    { icon: 0, top: '50%', left: '3%',  size: 40, rotate: 15,  anim: 1, delay: -10, opacity: 0.13 },
+    { icon: 3, top: '55%', right: '8%', size: 56, rotate: -15, anim: 3, delay: -5,  opacity: 0.16 },
+    { icon: 5, top: '65%', left: '7%',  size: 46, rotate: -25, anim: 2, delay: -12, opacity: 0.13 },
+    { icon: 1, top: '72%', right: '4%', size: 42, rotate: 10,  anim: 1, delay: -7,  opacity: 0.14 },
+    { icon: 4, top: '80%', left: '2%',  size: 52, rotate: -5,  anim: 3, delay: -9,  opacity: 0.13 },
+    { icon: 2, top: '88%', right: '3%', size: 46, rotate: 22,  anim: 2, delay: -14, opacity: 0.11 },
+    { icon: 6, top: '92%', left: '25%', size: 34, rotate: -12, anim: 1, delay: -11, opacity: 0.10 },
+  ],
+};
+
+const items = configs[density];
+---
+
+<div class:list={['pointer-events-none absolute inset-0 overflow-hidden hidden md:block', className]} aria-hidden="true">
+  {items.map((item) => {
+    const posStyle = item.left ? 'left:' + item.left : 'right:' + item.right;
+    const dur = String(10 + item.anim * 2);
+    const s = 'top:' + item.top + ';' + posStyle + ';width:' + item.size + 'px;height:' + item.size + 'px;opacity:' + item.opacity + ';transform:rotate(' + item.rotate + 'deg);animation:float-icon-' + item.anim + ' ' + dur + 's ease-in-out infinite;animation-delay:' + item.delay + 's';
+
+    return (
+      <img
+        src={icons[item.icon]}
+        alt=""
+        class="absolute"
+        style={s}
+      />
+    );
+  })}
+</div>

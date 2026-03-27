@@ -1,0 +1,166 @@
+---
+import { LogoPrincipal } from '../icons';
+import FloatingIcons from '../FloatingIcons.astro';
+---
+
+<section class="relative overflow-hidden px-6 py-28 sm:py-36 lg:py-44">
+  <!-- Gradient orbs (animated) -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div
+      class="absolute left-1/2 top-1/4 h-[500px] w-[700px] rounded-full bg-bipbip-red/10 blur-[120px] dark:bg-bipbip-red/[0.07]"
+      style="animation: hero-orb-float 8s ease-in-out infinite"
+    ></div>
+    <div
+      class="absolute right-1/4 top-1/3 h-[350px] w-[450px] rounded-full bg-bipbip-orange/[0.08] blur-[100px] dark:bg-bipbip-orange/[0.04]"
+      style="animation: hero-orb-float-2 10s ease-in-out infinite"
+    ></div>
+  </div>
+
+  <!-- Floating brand icons -->
+  <FloatingIcons density="dense" class="-z-[5]" />
+
+  <div class="mx-auto max-w-4xl text-center">
+    <!-- Logo -->
+    <div data-animate style="transition-delay: 0ms" class="mx-auto mb-6">
+      <LogoPrincipal size={72} class="mx-auto rounded-2xl shadow-lg shadow-bipbip-red/20" />
+    </div>
+
+    <!-- Badge -->
+    <div data-animate style="transition-delay: 100ms" class="mx-auto mb-8 w-fit rounded-full border border-bipbip-red/20 bg-bipbip-red/5 px-4 py-1.5 text-xs font-medium text-bipbip-red dark:border-bipbip-red/30 dark:bg-bipbip-red/10">
+      Now in Public Beta
+    </div>
+
+    <!-- Headline -->
+    <h1 data-animate style="transition-delay: 200ms" class="text-4xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-5xl lg:text-6xl">
+      Build your
+    </h1>
+    <div data-animate style="transition-delay: 250ms" class="mt-2 flex items-center justify-center h-[1.3em] text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+      <span
+        id="hero-typewriter"
+        class="bg-gradient-to-r from-bipbip-red to-bipbip-orange bg-clip-text text-transparent"
+        aria-label="Orders API, Live Tracking, Webhooks, Restaurants"
+      ></span>
+      <span class="hero-cursor ml-0.5 inline-block w-[3px] h-[0.9em] bg-bipbip-red dark:bg-bipbip-yellow rounded-full"></span>
+    </div>
+
+    <!-- Subtitle -->
+    <p data-animate style="transition-delay: 450ms" class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+      Integrate orders, restaurants, drivers, and real-time tracking into your applications with our RESTful API.
+    </p>
+
+    <!-- Stats counters -->
+    <div data-animate style="transition-delay: 550ms" class="mx-auto mt-10 flex items-center justify-center gap-8 sm:gap-12">
+      <div class="text-center">
+        <span class="counter-value text-2xl font-bold text-neutral-900 dark:text-white sm:text-3xl" data-target="12">0</span>
+        <p class="mt-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">API Endpoints</p>
+      </div>
+      <div class="h-8 w-px bg-neutral-200 dark:bg-border-dark"></div>
+      <div class="text-center">
+        <span class="counter-value text-2xl font-bold text-neutral-900 dark:text-white sm:text-3xl" data-target="99.9" data-suffix="%" data-decimals="1">0</span>
+        <p class="mt-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">Uptime</p>
+      </div>
+      <div class="h-8 w-px bg-neutral-200 dark:bg-border-dark"></div>
+      <div class="text-center">
+        <span class="counter-value text-2xl font-bold text-neutral-900 dark:text-white sm:text-3xl" data-target="3" data-suffix="">0</span>
+        <p class="mt-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">SDKs</p>
+      </div>
+    </div>
+
+    <!-- CTAs -->
+    <div data-animate style="transition-delay: 700ms" class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a
+        href="/docs"
+        class="inline-flex items-center gap-2 rounded-lg bg-bipbip-red px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-bipbip-red/25 transition-all duration-200 hover:bg-bipbip-red-dark hover:shadow-bipbip-red/30 hover:-translate-y-0.5"
+      >
+        Get Started
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </a>
+      <a
+        href="/api"
+        class="inline-flex items-center gap-2 rounded-lg border border-neutral-300 dark:border-border-dark px-6 py-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300 transition-all duration-200 hover:border-neutral-400 dark:hover:border-neutral-600 hover:-translate-y-0.5"
+      >
+        API Reference
+      </a>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function() {
+    const el = document.getElementById('hero-typewriter');
+    if (!el) return;
+
+    const words = ['Orders API', 'Live Tracking', 'Webhooks', 'Restaurants'];
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced) {
+      el.textContent = words[0];
+      return;
+    }
+
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function tick() {
+      const currentWord = words[wordIndex];
+
+      if (!isDeleting) {
+        charIndex++;
+        el.textContent = currentWord.slice(0, charIndex);
+
+        if (charIndex === currentWord.length) {
+          setTimeout(() => { isDeleting = true; tick(); }, 2000);
+          return;
+        }
+        setTimeout(tick, 80);
+      } else {
+        charIndex--;
+        el.textContent = currentWord.slice(0, charIndex);
+
+        if (charIndex === 0) {
+          isDeleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+          setTimeout(tick, 400);
+          return;
+        }
+        setTimeout(tick, 40);
+      }
+    }
+
+    setTimeout(tick, 600);
+  })();
+
+  // Counter animation
+  (function() {
+    var counters = document.querySelectorAll('.counter-value');
+    if (!counters.length) return;
+
+    var counterObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        var target = parseFloat(el.getAttribute('data-target'));
+        var suffix = el.getAttribute('data-suffix') || '';
+        var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+        var duration = 1500;
+        var start = performance.now();
+
+        function animate(now) {
+          var progress = Math.min((now - start) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var current = eased * target;
+          el.textContent = current.toFixed(decimals) + suffix;
+          if (progress < 1) requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+        counterObserver.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+
+    counters.forEach(function(c) { counterObserver.observe(c); });
+  })();
+</script>
