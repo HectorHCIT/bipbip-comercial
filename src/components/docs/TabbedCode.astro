@@ -78,71 +78,78 @@ const groupId = `tabbed-${Math.random().toString(36).slice(2, 9)}`;
 </div>
 
 <script is:inline>
-  document.querySelectorAll('[data-tabbed-group]').forEach((group) => {
-    if (group.hasAttribute('data-initialized')) return;
-    group.setAttribute('data-initialized', '');
+  // Init must re-run on every Astro view transition since body is swapped
+  // and new [data-tabbed-group] nodes have no listeners.
+  function initTabbedCode() {
+    document.querySelectorAll('[data-tabbed-group]').forEach((group) => {
+      if (group.hasAttribute('data-initialized')) return;
+      group.setAttribute('data-initialized', '');
 
-    const buttons = group.querySelectorAll('[data-tab-btn]');
-    const panels = group.querySelectorAll('[data-tab-panel]');
-    const copyBtn = group.querySelector('[data-tab-copy]');
+      const buttons = group.querySelectorAll('[data-tab-btn]');
+      const panels = group.querySelectorAll('[data-tab-panel]');
+      const copyBtn = group.querySelector('[data-tab-copy]');
 
-    buttons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const index = btn.getAttribute('data-tab-index');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const index = btn.getAttribute('data-tab-index');
 
-        buttons.forEach((b) => {
-          b.classList.remove('text-bipbip-red', 'dark:text-bipbip-yellow', 'border-bipbip-red', 'dark:border-bipbip-yellow');
-          b.classList.add('text-neutral-400', 'dark:text-neutral-500', 'border-transparent');
-          b.setAttribute('aria-selected', 'false');
+          buttons.forEach((b) => {
+            b.classList.remove('text-bipbip-red', 'dark:text-bipbip-yellow', 'border-bipbip-red', 'dark:border-bipbip-yellow');
+            b.classList.add('text-neutral-400', 'dark:text-neutral-500', 'border-transparent');
+            b.setAttribute('aria-selected', 'false');
+          });
+          panels.forEach((p) => p.setAttribute('hidden', ''));
+
+          btn.classList.add('text-bipbip-red', 'dark:text-bipbip-yellow', 'border-bipbip-red', 'dark:border-bipbip-yellow');
+          btn.classList.remove('text-neutral-400', 'dark:text-neutral-500', 'border-transparent');
+          btn.setAttribute('aria-selected', 'true');
+          const panel = group.querySelector('[data-tab-panel][data-tab-index="' + index + '"]');
+          if (panel) panel.removeAttribute('hidden');
         });
-        panels.forEach((p) => p.setAttribute('hidden', ''));
+      });
 
-        btn.classList.add('text-bipbip-red', 'dark:text-bipbip-yellow', 'border-bipbip-red', 'dark:border-bipbip-yellow');
-        btn.classList.remove('text-neutral-400', 'dark:text-neutral-500', 'border-transparent');
-        btn.setAttribute('aria-selected', 'true');
-        const panel = group.querySelector('[data-tab-panel][data-tab-index="' + index + '"]');
-        if (panel) panel.removeAttribute('hidden');
+      // Copy active tab
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const activePanel = group.querySelector('[data-tab-panel]:not([hidden]) pre');
+          if (!activePanel) return;
+
+          await navigator.clipboard.writeText(activePanel.textContent || '');
+
+          const copyIcon = copyBtn.querySelector('.copy-icon');
+          const checkIcon = copyBtn.querySelector('.check-icon');
+          const copyText = copyBtn.querySelector('.copy-text');
+
+          copyIcon?.classList.add('hidden');
+          checkIcon?.classList.remove('hidden');
+          if (copyText) copyText.textContent = 'Copied!';
+
+          setTimeout(() => {
+            copyIcon?.classList.remove('hidden');
+            checkIcon?.classList.add('hidden');
+            if (copyText) copyText.textContent = 'Copy';
+          }, 2000);
+        });
+      }
+
+      // Keyboard navigation
+      const tabList = group.querySelector('[role="tablist"]');
+      tabList?.addEventListener('keydown', (e) => {
+        const tabs = Array.from(buttons);
+        const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+        let next = current;
+
+        if (e.key === 'ArrowRight') next = (current + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+        else return;
+
+        e.preventDefault();
+        tabs[next].click();
+        tabs[next].focus();
       });
     });
+  }
 
-    // Copy active tab
-    if (copyBtn) {
-      copyBtn.addEventListener('click', async () => {
-        const activePanel = group.querySelector('[data-tab-panel]:not([hidden]) pre');
-        if (!activePanel) return;
-
-        await navigator.clipboard.writeText(activePanel.textContent || '');
-
-        const copyIcon = copyBtn.querySelector('.copy-icon');
-        const checkIcon = copyBtn.querySelector('.check-icon');
-        const copyText = copyBtn.querySelector('.copy-text');
-
-        copyIcon?.classList.add('hidden');
-        checkIcon?.classList.remove('hidden');
-        if (copyText) copyText.textContent = 'Copied!';
-
-        setTimeout(() => {
-          copyIcon?.classList.remove('hidden');
-          checkIcon?.classList.add('hidden');
-          if (copyText) copyText.textContent = 'Copy';
-        }, 2000);
-      });
-    }
-
-    // Keyboard navigation
-    const tabList = group.querySelector('[role="tablist"]');
-    tabList?.addEventListener('keydown', (e) => {
-      const tabs = Array.from(buttons);
-      const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
-      let next = current;
-
-      if (e.key === 'ArrowRight') next = (current + 1) % tabs.length;
-      else if (e.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
-      else return;
-
-      e.preventDefault();
-      tabs[next].click();
-      tabs[next].focus();
-    });
-  });
+  initTabbedCode();
+  document.addEventListener('astro:page-load', initTabbedCode);
 </script>
