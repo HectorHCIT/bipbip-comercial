@@ -19,17 +19,19 @@ const methodColors: Record<string, string> = {
   <a
     href={href}
     class:list={[
-      'sidebar-link flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-surface-dark-elevated hover:text-neutral-900 dark:hover:text-white transition-colors',
+      'sidebar-link flex items-center gap-2 min-w-0 rounded-md px-3 py-1.5 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-surface-dark-elevated hover:text-neutral-900 dark:hover:text-white transition-colors',
       className,
     ]}
     data-href={href}
     {...attrs}
   >
     {method && (
-      <span class:list={['inline-flex min-w-[3rem] justify-center rounded px-1.5 py-0.5 text-[10px] font-bold font-mono', methodColors[method]]}>
+      <span class:list={['inline-flex shrink-0 min-w-[2.75rem] justify-center rounded px-1.5 py-0.5 text-[10px] font-bold font-mono', methodColors[method]]}>
         {method}
       </span>
     )}
-    <slot />
+    <span class="min-w-0 flex-1 truncate">
+      <slot />
+    </span>
   </a>
 </li>

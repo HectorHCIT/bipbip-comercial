@@ -17,11 +17,17 @@
   </svg>
 </button>
 
-<script>
-  const toggle = document.getElementById('theme-toggle');
-  toggle?.addEventListener('click', () => {
-    const html = document.documentElement;
-    html.classList.toggle('dark');
-    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-  });
+<script is:inline>
+  function initThemeToggle() {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle || toggle.dataset.bound === '1') return;
+    toggle.dataset.bound = '1';
+    toggle.addEventListener('click', () => {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  }
+  initThemeToggle();
+  document.addEventListener('astro:page-load', initThemeToggle);
 </script>

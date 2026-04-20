@@ -9,7 +9,7 @@ const { title } = Astro.props;
 ---
 
 <Layout title={`${title} - BipBip Developers`}>
-  <div class="mx-auto max-w-7xl lg:flex">
+  <div class="lg:flex">
     <!-- Mobile sidebar toggle -->
     <button
       id="sidebar-toggle"
@@ -27,22 +27,68 @@ const { title } = Astro.props;
     <!-- Sidebar overlay (mobile) -->
     <div id="sidebar-overlay" class="fixed inset-0 z-30 bg-black/50 hidden lg:hidden"></div>
 
-    <!-- Sidebar -->
+    <!-- Sidebar — flush-left on desktop, drawer on mobile -->
     <aside
       id="sidebar"
-      class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full overflow-y-auto border-r border-neutral-200 dark:border-border-dark bg-surface-light dark:bg-surface-dark pt-20 pb-8 transition-transform duration-300 lg:sticky lg:top-16 lg:z-0 lg:h-[calc(100vh-4rem)] lg:w-64 lg:shrink-0 lg:translate-x-0 lg:pt-8"
+      class="docs-scrollbar fixed inset-y-0 left-0 z-40 w-72 -translate-x-full overflow-x-hidden overflow-y-auto overscroll-contain border-r border-neutral-200 dark:border-border-dark bg-surface-light dark:bg-surface-dark pt-20 pb-8 transition-transform duration-[280ms] ease-out lg:sticky lg:top-16 lg:z-0 lg:h-[calc(100vh-4rem)] lg:w-64 xl:w-72 lg:shrink-0 lg:translate-x-0 lg:pt-8"
     >
-      <nav class="px-4">
+      <nav class="px-4 lg:pl-8 lg:pr-4">
         <slot name="sidebar" />
       </nav>
     </aside>
 
-    <!-- Content -->
+    <!-- Content — centered with its own readable max-width -->
     <div class="min-w-0 flex-1 px-6 py-8 lg:px-12 lg:py-10">
-      <slot />
+      <div class="mx-auto max-w-4xl">
+        <slot />
+      </div>
     </div>
   </div>
 </Layout>
+
+<style is:global>
+  /* Thin, discreet scrollbar — invisible at rest, subtle on hover */
+  .docs-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.2s ease;
+  }
+  .docs-scrollbar:hover,
+  .docs-scrollbar:focus-within {
+    scrollbar-color: rgb(163 163 163 / 0.45) transparent;
+  }
+  :is(.dark) .docs-scrollbar:hover,
+  :is(.dark) .docs-scrollbar:focus-within {
+    scrollbar-color: rgb(115 115 115 / 0.5) transparent;
+  }
+
+  /* WebKit (Chrome/Safari/Edge) */
+  .docs-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .docs-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .docs-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+  }
+  .docs-scrollbar:hover::-webkit-scrollbar-thumb,
+  .docs-scrollbar:focus-within::-webkit-scrollbar-thumb {
+    background: rgb(163 163 163 / 0.4);
+  }
+  .docs-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(115 115 115 / 0.6);
+  }
+  :is(.dark) .docs-scrollbar:hover::-webkit-scrollbar-thumb,
+  :is(.dark) .docs-scrollbar:focus-within::-webkit-scrollbar-thumb {
+    background: rgb(115 115 115 / 0.5);
+  }
+  :is(.dark) .docs-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(163 163 163 / 0.7);
+  }
+</style>
 
 <script is:inline>
   const toggle = document.getElementById('sidebar-toggle');
