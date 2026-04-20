@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import FloatingIcons from '../components/FloatingIcons.astro';
 
 const badgeStyles: Record<string, string> = {
   feature: 'bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20',
@@ -11,40 +10,30 @@ const badgeStyles: Record<string, string> = {
 
 const entries = [
   {
-    date: 'March 15, 2026',
-    version: 'v1.2.0',
-    badges: ['feature', 'improvement'],
-    title: 'Real-time driver tracking & batch orders',
-    items: [
-      'Added WebSocket endpoint for live driver location updates',
-      'New batch order creation endpoint (POST /v1/orders/batch)',
-      'Improved rate limit headers with retry-after support',
-      'Dashboard now shows webhook delivery logs',
-    ],
-  },
-  {
-    date: 'February 8, 2026',
-    version: 'v1.1.0',
-    badges: ['feature', 'fix'],
-    title: 'Webhook management & bug fixes',
-    items: [
-      'Webhook CRUD endpoints now available',
-      'Added restaurant menu endpoint (GET /v1/restaurants/:id/menu)',
-      'Fixed order status not updating for cancelled orders',
-      'Fixed timezone handling in delivery estimates',
-    ],
-  },
-  {
-    date: 'January 10, 2026',
+    date: 'Abril 11, 2026',
     version: 'v1.0.0',
     badges: ['feature'],
-    title: 'Initial public release',
+    title: 'Merchant Integration API — release inicial',
     items: [
-      'Orders API: create, list, retrieve, and cancel orders',
-      'Restaurants API: browse restaurants and menus',
-      'Drivers API: retrieve driver info and location',
-      'Authentication via API keys with Bearer token scheme',
-      'Sandbox environment available for testing',
+      'Webhook outbound POST /v1/order/{remoteId} para entrega de órdenes nuevas',
+      'Webhook outbound POST /v1/order/{remoteId}/{remoteOrderId} para cancelaciones',
+      'Firma HMAC-SHA256 obligatoria en todos los webhooks (X-Bipbip-Signature-256)',
+      'REST API con endpoints /accept, /reject, /status y GET por orderKey',
+      'Autenticación vía header X-Bipbip-Api-Key',
+      'Idempotency-Key obligatoria en mutaciones (cache 24h)',
+      'Rate limits: 100 req/min (fija) + 1.000 req/hora (deslizante)',
+      'Samples oficiales en Node.js, Python, C# y PHP (solo stdlib)',
+    ],
+  },
+  {
+    date: 'Próximo',
+    version: 'Roadmap',
+    badges: ['improvement'],
+    title: 'Ambiente sandbox disponible',
+    items: [
+      'Sandbox aislado con órdenes de prueba',
+      'API keys dedicadas para testing sin afectar producción',
+      'Portal de autogestión de credenciales y base URLs',
     ],
   },
 ];
@@ -52,10 +41,9 @@ const entries = [
 
 <Layout title="Changelog - BipBip Developer Portal" description="Latest updates, new features, and bug fixes for the BipBip API.">
   <div class="relative mx-auto max-w-3xl px-6 py-16 overflow-hidden">
-    <FloatingIcons density="sparse" />
-    <h1 class="text-4xl font-bold tracking-tight text-neutral-900 dark:text-white">Changelog</h1>
-    <p class="mt-3 text-lg text-neutral-600 dark:text-neutral-400">
-      Latest updates, new features, and bug fixes for the BipBip API.
+    <h1 class="text-4xl font-bold tracking-tight text-neutral-900 dark:text-white animate-fade-up">Changelog</h1>
+    <p class="mt-3 text-lg text-neutral-600 dark:text-neutral-400 animate-fade-up" style="animation-delay: 80ms">
+      Versiones, cambios y próximas mejoras del Merchant Integration API.
     </p>
 
     <div class="mt-12 relative" id="changelog-timeline">

@@ -15,7 +15,7 @@ const methodColors: Record<string, string> = {
   DELETE: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
 };
 
-const anchorId = `${method.toLowerCase()}-${path.replace(/[/:]/g, '-').replace(/^-+|-+$/g, '')}`;
+const anchorId = `${method.toLowerCase()}-${path.replace(/[/:{}]/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`;
 ---
 
 <div id={anchorId} class="rounded-xl border border-neutral-200 dark:border-border-dark bg-white dark:bg-surface-dark-raised p-6 scroll-mt-24">

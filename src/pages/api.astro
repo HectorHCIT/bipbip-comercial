@@ -5,302 +5,377 @@ import SidebarLink from '../components/docs/SidebarLink.astro';
 import EndpointCard from '../components/docs/EndpointCard.astro';
 import Callout from '../components/docs/Callout.astro';
 
-const listOrdersResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
-    {
-      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_abc123"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"in_progress"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"total"</span>: <span class="text-amber-600 dark:text-amber-400">245.50</span>,
-      <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T14:30:00Z"</span>
-    }
-  ],
-  <span class="text-blue-600 dark:text-blue-400">"has_more"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+// ── Response bodies reales del swagger ──────────────────────────────────────
+
+const acceptResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Order accepted"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"accepted"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"acceptedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:12Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>
+  }
 }`;
 
-const createOrderResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_def456"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"pending"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"items"</span>: <span class="text-amber-600 dark:text-amber-400">3</span>,
-  <span class="text-blue-600 dark:text-blue-400">"total"</span>: <span class="text-amber-600 dark:text-amber-400">189.00</span>,
-  <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-26T10:15:00Z"</span>
+const rejectResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Order rejected"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"rejected"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"rejectedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:30Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"reason"</span>: <span class="text-green-700 dark:text-green-400">"Producto agotado"</span>
+  }
+}`;
+
+const statusResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Status updated"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"preparing"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"changedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:47:00Z"</span>
+  }
 }`;
 
 const getOrderResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_abc123"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"in_progress"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"driver_id"</span>: <span class="text-green-700 dark:text-green-400">"drv_m4n5o6"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"total"</span>: <span class="text-amber-600 dark:text-amber-400">245.50</span>,
-  <span class="text-blue-600 dark:text-blue-400">"estimated_delivery"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T15:00:00Z"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T14:30:00Z"</span>
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"storeId"</span>: <span class="text-amber-600 dark:text-amber-400">42</span>,
+    <span class="text-blue-600 dark:text-blue-400">"brandId"</span>: <span class="text-amber-600 dark:text-amber-400">7</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"preparing"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"merchantStatusReason"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"receivedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:42:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"acceptedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:12Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"rejectedAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"preparingAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:47:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"readyAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"handedOverAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"cancelledAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"history"</span>: [
+      {
+        <span class="text-blue-600 dark:text-blue-400">"fromStatus"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+        <span class="text-blue-600 dark:text-blue-400">"toStatus"</span>: <span class="text-green-700 dark:text-green-400">"pending"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"changedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:42:00Z"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"actorType"</span>: <span class="text-green-700 dark:text-green-400">"system"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"actorId"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+        <span class="text-blue-600 dark:text-blue-400">"reason"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
+      }
+    ]
+  }
 }`;
 
-const cancelOrderResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"ord_abc123"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"cancelled"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"cancelled_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-15T14:45:00Z"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"cancellation_reason"</span>: <span class="text-green-700 dark:text-green-400">"customer_request"</span>
+const listOrdersResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"items"</span>: [
+      {
+        <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"storeId"</span>: <span class="text-amber-600 dark:text-amber-400">42</span>,
+        <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"preparing"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"receivedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:42:00Z"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"acceptedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:12Z"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>
+      }
+    ],
+    <span class="text-blue-600 dark:text-blue-400">"nextCursor"</span>: <span class="text-green-700 dark:text-green-400">"eyJsYXN0SWQiOjE3fQ"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"hasMore"</span>: <span class="text-amber-600 dark:text-amber-400">true</span>
+  }
 }`;
 
-const listRestaurantsResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
-    {
-      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Pollo Campero Centro"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"city"</span>: <span class="text-green-700 dark:text-green-400">"Tegucigalpa"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"is_active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+const errorResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"type"</span>: <span class="text-green-700 dark:text-green-400">"https://errors.bipbip.com/not-found"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"title"</span>: <span class="text-green-700 dark:text-green-400">"Order not found"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"detail"</span>: <span class="text-green-700 dark:text-green-400">"The order ord_xxx does not exist or does not belong to the authenticated client."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-amber-600 dark:text-amber-400">404</span>,
+  <span class="text-blue-600 dark:text-blue-400">"traceId"</span>: <span class="text-green-700 dark:text-green-400">"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"meta"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
+}`;
+
+const validationErrorResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"type"</span>: <span class="text-green-700 dark:text-green-400">"https://errors.bipbip.com/validation"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"title"</span>: <span class="text-green-700 dark:text-green-400">"Validation failed"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"detail"</span>: <span class="text-green-700 dark:text-green-400">"One or more validation errors occurred."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-amber-600 dark:text-amber-400">422</span>,
+  <span class="text-blue-600 dark:text-blue-400">"traceId"</span>: <span class="text-green-700 dark:text-green-400">"00-abc..."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"meta"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"errors"</span>: {
+      <span class="text-blue-600 dark:text-blue-400">"reasonCode"</span>: [<span class="text-green-700 dark:text-green-400">"The ReasonCode field is required."</span>]
     }
-  ],
-  <span class="text-blue-600 dark:text-blue-400">"has_more"</span>: <span class="text-purple-600 dark:text-purple-400">false</span>
+  }
 }`;
 
-const getRestaurantResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Pollo Campero Centro"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"city"</span>: <span class="text-green-700 dark:text-green-400">"Tegucigalpa"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"address"</span>: <span class="text-green-700 dark:text-green-400">"Blvd Morazán, Tegucigalpa"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"is_active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>,
-  <span class="text-blue-600 dark:text-blue-400">"rating"</span>: <span class="text-amber-600 dark:text-amber-400">4.7</span>
-}`;
-
-const getMenuResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_x7y8z9"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"categories"</span>: [
-    {
-      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Combos"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"items_count"</span>: <span class="text-amber-600 dark:text-amber-400">12</span>
-    }
-  ]
-}`;
-
-const getDriverResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"drv_m4n5o6"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Carlos Martínez"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"on_delivery"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"vehicle_type"</span>: <span class="text-green-700 dark:text-green-400">"motorcycle"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"rating"</span>: <span class="text-amber-600 dark:text-amber-400">4.9</span>
-}`;
-
-const getDriverLocationResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"driver_id"</span>: <span class="text-green-700 dark:text-green-400">"drv_m4n5o6"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"latitude"</span>: <span class="text-amber-600 dark:text-amber-400">14.0723</span>,
-  <span class="text-blue-600 dark:text-blue-400">"longitude"</span>: <span class="text-amber-600 dark:text-amber-400">-87.1921</span>,
-  <span class="text-blue-600 dark:text-blue-400">"heading"</span>: <span class="text-amber-600 dark:text-amber-400">245</span>,
-  <span class="text-blue-600 dark:text-blue-400">"updated_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-26T10:30:05Z"</span>
-}`;
-
-const createWebhookResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"whk_p7q8r9"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"url"</span>: <span class="text-green-700 dark:text-green-400">"https://example.com/webhooks/bipbip"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"events"</span>: [<span class="text-green-700 dark:text-green-400">"order.created"</span>, <span class="text-green-700 dark:text-green-400">"order.delivered"</span>],
-  <span class="text-blue-600 dark:text-blue-400">"active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>,
-  <span class="text-blue-600 dark:text-blue-400">"created_at"</span>: <span class="text-green-700 dark:text-green-400">"2026-03-26T09:00:00Z"</span>
-}`;
-
-const listWebhooksResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
-    {
-      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"whk_p7q8r9"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"url"</span>: <span class="text-green-700 dark:text-green-400">"https://example.com/webhooks/bipbip"</span>,
-      <span class="text-blue-600 dark:text-blue-400">"events"</span>: [<span class="text-green-700 dark:text-green-400">"order.created"</span>, <span class="text-green-700 dark:text-green-400">"order.delivered"</span>],
-      <span class="text-blue-600 dark:text-blue-400">"active"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
-    }
-  ]
-}`;
-
-const deleteWebhookResponse = `{
-  <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"whk_p7q8r9"</span>,
-  <span class="text-blue-600 dark:text-blue-400">"deleted"</span>: <span class="text-purple-600 dark:text-purple-400">true</span>
+const idempotencyConflict = `{
+  <span class="text-blue-600 dark:text-blue-400">"type"</span>: <span class="text-green-700 dark:text-green-400">"https://errors.bipbip.com/idempotency-conflict"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"title"</span>: <span class="text-green-700 dark:text-green-400">"Idempotency conflict"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"detail"</span>: <span class="text-green-700 dark:text-green-400">"Idempotency-Key reused with a different request body."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-amber-600 dark:text-amber-400">409</span>,
+  <span class="text-blue-600 dark:text-blue-400">"traceId"</span>: <span class="text-green-700 dark:text-green-400">"00-abc..."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"meta"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
 }`;
 ---
 
-<DocsLayout title="API Reference">
+<DocsLayout title="REST API Reference">
   <Fragment slot="sidebar">
+    <SidebarGroup title="Primero">
+      <SidebarLink href="#overview">Introducción</SidebarLink>
+      <SidebarLink href="#auth">Autenticación</SidebarLink>
+      <SidebarLink href="#idempotency">Idempotency-Key</SidebarLink>
+      <SidebarLink href="#rate-limits">Rate limits</SidebarLink>
+      <SidebarLink href="#errors">Errores</SidebarLink>
+    </SidebarGroup>
+
     <SidebarGroup title="Orders">
-      <SidebarLink href="#get-v1-orders" method="GET">/v1/orders</SidebarLink>
-      <SidebarLink href="#post-v1-orders" method="POST">/v1/orders</SidebarLink>
-      <SidebarLink href="#get-v1-orders-id" method="GET">/v1/orders/:id</SidebarLink>
-      <SidebarLink href="#put-v1-orders-id-cancel" method="PUT">/v1/orders/:id/cancel</SidebarLink>
-    </SidebarGroup>
-
-    <SidebarGroup title="Restaurants">
-      <SidebarLink href="#get-v1-restaurants" method="GET">/v1/restaurants</SidebarLink>
-      <SidebarLink href="#get-v1-restaurants-id" method="GET">/v1/restaurants/:id</SidebarLink>
-      <SidebarLink href="#get-v1-restaurants-id-menu" method="GET">/v1/restaurants/:id/menu</SidebarLink>
-    </SidebarGroup>
-
-    <SidebarGroup title="Drivers">
-      <SidebarLink href="#get-v1-drivers-id" method="GET">/v1/drivers/:id</SidebarLink>
-      <SidebarLink href="#get-v1-drivers-id-location" method="GET">/v1/drivers/:id/location</SidebarLink>
-    </SidebarGroup>
-
-    <SidebarGroup title="Webhooks">
-      <SidebarLink href="#post-v1-webhooks" method="POST">/v1/webhooks</SidebarLink>
-      <SidebarLink href="#get-v1-webhooks" method="GET">/v1/webhooks</SidebarLink>
-      <SidebarLink href="#delete-v1-webhooks-id" method="DELETE">/v1/webhooks/:id</SidebarLink>
+      <SidebarLink href="#post-api-v1-orders-orderkey-accept" method="POST">Aceptar</SidebarLink>
+      <SidebarLink href="#post-api-v1-orders-orderkey-reject" method="POST">Rechazar</SidebarLink>
+      <SidebarLink href="#post-api-v1-orders-orderkey-status" method="POST">Actualizar estado</SidebarLink>
+      <SidebarLink href="#get-api-v1-orders-orderkey" method="GET">Consultar orden</SidebarLink>
+      <SidebarLink href="#get-api-v1-orders" method="GET">Listar órdenes</SidebarLink>
     </SidebarGroup>
   </Fragment>
 
   <!-- Header -->
-  <section id="api-reference" class="scroll-mt-24">
+  <section id="overview" class="scroll-mt-24">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">Inbound · Vos la llamás</p>
     <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-      API Reference
+      REST API Reference
     </h1>
     <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
-      Complete reference for all BipBip API endpoints. Each endpoint includes the
-      HTTP method, path, description, and an example response.
+      Tu POS llama a BipBip para aceptar, rechazar, avanzar el estado y consultar órdenes. Esta es la contraparte
+      del <a href="/webhook" class="text-bipbip-red hover:underline">Webhook Spec</a>: una vez que BipBip te entrega
+      una orden, usás esta API para gestionar su ciclo de vida.
     </p>
 
     <Callout type="info">
       <Fragment slot="title">Base URL</Fragment>
-      All endpoints are relative to
-      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">https://api.bipbip.hn/v1</code>
+      Todos los endpoints son relativos a
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1.5 py-0.5 text-sm font-mono">https://api.bipbip.com</code>.
+      Las rutas llevan prefijo <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">/api/v1/</code> con versionado en el path.
     </Callout>
   </section>
 
   <hr class="my-12 border-neutral-200 dark:border-border-dark" />
 
-  <!-- Orders -->
+  <!-- Auth -->
+  <section id="auth" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Autenticación
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Cada request debe incluir el header
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">X-Bipbip-Api-Key</code>
+      con el valor entregado por el equipo BipBip durante el onboarding. No usamos Bearer tokens ni OAuth para esta API.
+      Para obtener y gestionar tus API Keys, usá el <a href="/portal" class="text-bipbip-red hover:underline">Portal de autogestión</a>.
+    </p>
+
+    <pre class="mt-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code><span class="text-neutral-400 dark:text-neutral-500"># Cada llamada debe llevar este header</span>
+<span class="text-bipbip-red dark:text-bipbip-yellow">curl</span> <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"X-Bipbip-Api-Key: &lt;tu-api-key&gt;"</span> <span class="text-neutral-500 dark:text-neutral-400">\</span>
+     <span class="text-green-700 dark:text-green-400">https://api.bipbip.com/api/v1/Orders/&lt;orderKey&gt;</span></code></pre>
+
+    <Callout type="warning">
+      <Fragment slot="title">Protegé tu API Key</Fragment>
+      No la expongas en el frontend, en repositorios públicos ni en bundles del cliente.
+      Guardala en variables de entorno del servidor y nunca la commitees.
+    </Callout>
+
+    <Callout type="danger">
+      <Fragment slot="title">Paths case-sensitive</Fragment>
+      El servidor <strong>no</strong> normaliza casing. El segmento <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">/Orders/</code>
+      va con <strong>O mayúscula</strong> literal — <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">/orders/</code> devuelve 404.
+      Respetá el casing exacto de cada path documentado acá.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Idempotency -->
+  <section id="idempotency" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Idempotency-Key
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Todas las mutaciones (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/accept</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/reject</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/status</code>)
+      <strong>requieren</strong> el header <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">Idempotency-Key</code>.
+      El valor debe ser un UUID v4 único por intento lógico.
+    </p>
+
+    <ul class="mt-4 space-y-2 text-sm text-neutral-600 dark:text-neutral-400 list-disc pl-5">
+      <li>Misma key + mismo body dentro de las 24h → BipBip devuelve la respuesta en caché sin reejecutar.</li>
+      <li>Misma key + body diferente → HTTP 409 Conflict.</li>
+      <li>Key nueva → request procesado normalmente.</li>
+      <li>Sin header en mutaciones → HTTP 422 Unprocessable Entity.</li>
+    </ul>
+
+    <pre class="mt-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={idempotencyConflict} /></pre>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Rate limits -->
+  <section id="rate-limits" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Rate limits
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Los límites se aplican por API Key y están activos en todos los endpoints.
+      Si los superás recibís HTTP 429 — implementá exponential backoff con jitter en tu cliente.
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Ventana</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Límite</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Estrategia</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Ventana fija</td>
+            <td class="px-4 py-3 font-mono text-sm text-neutral-900 dark:text-white">100 requests / min</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Reset cada 60s</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Ventana deslizante</td>
+            <td class="px-4 py-3 font-mono text-sm text-neutral-900 dark:text-white">1.000 requests / hora</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Evaluada continuamente</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Errors -->
+  <section id="errors" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Errores
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      La API sigue el formato <strong>RFC 7807 Problem Details</strong>. Todos los errores devuelven un body JSON con los campos
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">type</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">title</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">detail</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">status</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">traceId</code> y
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">meta</code>.
+      Para errores de validación (422), <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">meta</code>
+      incluye un mapa de campo → lista de mensajes.
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Código</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Significado</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">401 Unauthorized</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">API Key ausente o inválida</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">404 Not Found</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">orderKey no existe o no pertenece al cliente autenticado</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">409 Conflict</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Idempotency-Key reutilizada con body diferente, orden en estado incorrecto para la transición, o transición inválida</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">422 Unprocessable Entity</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Datos inválidos en el body o falta el header <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Idempotency-Key</code>. El campo <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">meta.errors</code> detalla los campos problemáticos.</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">429 Too Many Requests</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Rate limit superado — implementá backoff exponencial con jitter</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">5xx</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Error del servidor — reintentá con backoff</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mt-8 text-lg font-semibold text-neutral-900 dark:text-white">Error genérico (401, 404, 409, 429)</h3>
+    <pre class="mt-3 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={errorResponse} /></pre>
+
+    <h3 class="mt-6 text-lg font-semibold text-neutral-900 dark:text-white">Error de validación (422)</h3>
+    <pre class="mt-3 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={validationErrorResponse} /></pre>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Endpoints: Orders -->
   <section id="orders" class="scroll-mt-24">
     <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
       Orders
     </h2>
     <p class="mt-4 text-neutral-600 dark:text-neutral-400">
-      Create, retrieve, list, and cancel delivery orders. Orders represent a
-      customer purchase from a restaurant, assigned to a driver for delivery.
+      Gestioná el ciclo de vida de las órdenes que BipBip te entregó por webhook. Los endpoints de mutación
+      requieren <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Api-Key</code>
+      e <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">Idempotency-Key</code>.
     </p>
 
     <div class="mt-6 space-y-4">
       <EndpointCard
-        method="GET"
-        path="/v1/orders"
-        description="List all orders with optional filters for status, date range, and restaurant. Returns a paginated list sorted by creation date."
-        responseCode={listOrdersResponse}
+        method="POST"
+        path="/api/v1/Orders/{orderKey}/accept"
+        description="Transiciona la orden de pending a accepted. Cancela el job de timeout de aceptación y publica el evento order.accepted_by_external_merchant.v1. Body: { remoteOrderId?, estimatedPrepTimeMinutes? }. Idempotente: misma Idempotency-Key + mismo body → respuesta cacheada. Responde 202."
+        responseCode={acceptResponse}
       />
 
       <EndpointCard
         method="POST"
-        path="/v1/orders"
-        description="Create a new delivery order. Requires a restaurant ID, delivery address, and at least one item. Returns the created order with a pending status."
-        responseCode={createOrderResponse}
+        path="/api/v1/Orders/{orderKey}/reject"
+        description="Transiciona la orden de pending a rejected (terminal). Requiere un reasonCode (int) obligatorio. Body: { reasonCode*, reason?, notes? }. Publica el evento order.rejected_by_external_merchant.v1. Idempotente. Responde 202."
+        responseCode={rejectResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/api/v1/Orders/{orderKey}/status"
+        description="Cambia el estado de una orden ya aceptada. Transiciones válidas: accepted → preparing → ready → handedOver. También permite cancelar (→ cancelled). Body: { newStatus* (MerchantStatus), estimatedReadyAt? }. Publica order.status_changed_by_external_merchant.v1. Responde 202."
+        responseCode={statusResponse}
       />
 
       <EndpointCard
         method="GET"
-        path="/v1/orders/:id"
-        description="Retrieve a single order by its unique ID. Includes full order details, current status, assigned driver, and delivery estimates."
+        path="/api/v1/Orders/{orderKey}"
+        description="Devuelve el snapshot completo de la orden: estado actual, timestamps de cada transición (receivedAt, acceptedAt?, rejectedAt?, preparingAt?, readyAt?, handedOverAt?, cancelledAt?) e historial completo de cambios. Solo retorna órdenes del cliente autenticado. No requiere Idempotency-Key. Responde 200."
         responseCode={getOrderResponse}
       />
 
       <EndpointCard
-        method="PUT"
-        path="/v1/orders/:id/cancel"
-        description="Cancel an active order. Only orders with status pending or accepted can be cancelled. Requires a cancellation reason."
-        responseCode={cancelOrderResponse}
+        method="GET"
+        path="/api/v1/Orders"
+        description="Lista órdenes del cliente autenticado con paginación por cursor opaco. Query params: Cursor?, PageSize? (máx 100), Status?, FromDate?, ToDate?. Ordenadas por fecha de creación descendente. Pasa nextCursor de la respuesta anterior para obtener la siguiente página. Responde 200."
+        responseCode={listOrdersResponse}
       />
     </div>
-  </section>
 
-  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
-
-  <!-- Restaurants -->
-  <section id="restaurants" class="scroll-mt-24">
-    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-      Restaurants
-    </h2>
-    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
-      Browse restaurants, retrieve details, and access menus. Restaurants are the
-      merchant partners on the BipBip platform.
-    </p>
-
-    <div class="mt-6 space-y-4">
-      <EndpointCard
-        method="GET"
-        path="/v1/restaurants"
-        description="List all restaurants with optional filters for city, active status, and cuisine type. Returns a paginated list."
-        responseCode={listRestaurantsResponse}
-      />
-
-      <EndpointCard
-        method="GET"
-        path="/v1/restaurants/:id"
-        description="Retrieve detailed information about a restaurant including address, operating hours, rating, and active status."
-        responseCode={getRestaurantResponse}
-      />
-
-      <EndpointCard
-        method="GET"
-        path="/v1/restaurants/:id/menu"
-        description="Retrieve the full menu for a restaurant, organized by categories with item details and pricing."
-        responseCode={getMenuResponse}
-      />
-    </div>
-  </section>
-
-  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
-
-  <!-- Drivers -->
-  <section id="drivers" class="scroll-mt-24">
-    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-      Drivers
-    </h2>
-    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
-      Access driver profiles and real-time location data. Drivers are the delivery
-      partners who pick up and deliver orders.
-    </p>
-
-    <div class="mt-6 space-y-4">
-      <EndpointCard
-        method="GET"
-        path="/v1/drivers/:id"
-        description="Retrieve a driver's profile including name, vehicle type, current status, and rating."
-        responseCode={getDriverResponse}
-      />
-
-      <EndpointCard
-        method="GET"
-        path="/v1/drivers/:id/location"
-        description="Get the real-time GPS location of a driver. Returns latitude, longitude, heading, and last update timestamp."
-        responseCode={getDriverLocationResponse}
-      />
-    </div>
-  </section>
-
-  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
-
-  <!-- Webhooks -->
-  <section id="webhooks" class="scroll-mt-24">
-    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-      Webhooks
-    </h2>
-    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
-      Subscribe to real-time event notifications. Webhooks push updates to your
-      server when order statuses change, deliveries complete, and more.
-    </p>
-
-    <div class="mt-6 space-y-4">
-      <EndpointCard
-        method="POST"
-        path="/v1/webhooks"
-        description="Register a new webhook endpoint. Provide a URL and a list of event types to subscribe to."
-        responseCode={createWebhookResponse}
-      />
-
-      <EndpointCard
-        method="GET"
-        path="/v1/webhooks"
-        description="List all registered webhook endpoints for your account, including their event subscriptions and active status."
-        responseCode={listWebhooksResponse}
-      />
-
-      <EndpointCard
-        method="DELETE"
-        path="/v1/webhooks/:id"
-        description="Remove a webhook subscription. The endpoint will stop receiving event notifications immediately."
-        responseCode={deleteWebhookResponse}
-      />
-    </div>
+    <Callout type="info">
+      <Fragment slot="title">Máquina de estados</Fragment>
+      Las transiciones válidas desde la REST API son:
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">pending</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">accepted</code> /
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">rejected</code>,
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">accepted</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">preparing</code>,
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">preparing</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">ready</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">handedOver</code>.
+      Ver el <a href="/docs#glossary" class="font-medium underline">glosario</a> para detalles.
+      Nota: los valores de <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">status</code>
+      en la REST API son camelCase lowercase (ej: <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">handedOver</code>),
+      distinto de los webhooks que usan PascalCase.
+    </Callout>
   </section>
 </DocsLayout>
