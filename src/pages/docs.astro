@@ -274,9 +274,9 @@ const badAckExamples = `<span class="text-neutral-400 dark:text-neutral-500">// 
 
     <ol class="mt-8 space-y-10">
       <!-- Step 1 -->
-      <li class="relative pl-14">
-        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">1</div>
-        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Implementá el endpoint del webhook</h3>
+      <li class="relative pl-16">
+        <div class="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange text-2xl font-bold text-white shadow-lg shadow-bipbip-red/20">1</div>
+        <h3 class="text-xl font-semibold text-neutral-900 dark:text-white">Implementá el endpoint del webhook</h3>
         <p class="mt-3 text-neutral-600 dark:text-neutral-400">
           BipBip enviará <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono text-bipbip-red dark:text-bipbip-yellow">POST &#123;tuBaseUrl&#125;/v1/order/&#123;remoteId&#125;</code>
           cada vez que llegue una nueva orden para tu tienda. Tu endpoint debe:
@@ -288,17 +288,17 @@ const badAckExamples = `<span class="text-neutral-400 dark:text-neutral-500">// 
           <li>Responder en menos de 30 segundos (BipBip toma cualquier respuesta lenta como fallo)</li>
         </ul>
         <Callout type="warning">
-          <Fragment slot="title">remoteOrderId es obligatorio</Fragment>
-          Devolver HTTP 200 sin un <code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">remoteOrderId</code> válido
-          en el body se trata como un delivery fallido y BipBip reintentará. Ver
+          <Fragment slot="title">Ojo: remoteOrderId es obligatorio en la respuesta</Fragment>
+          Sin un <code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">remoteOrderId</code> válido en el body,
+          BipBip trata el delivery como fallido y reintenta. El 200 solo no alcanza. Ver
           <a href="#faq-reintentos" class="font-medium underline">BipBip sigue reintentando</a>.
         </Callout>
       </li>
 
       <!-- Step 2 -->
-      <li class="relative pl-14">
-        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">2</div>
-        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Verificá la firma HMAC</h3>
+      <li class="relative pl-16">
+        <div class="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange text-2xl font-bold text-white shadow-lg shadow-bipbip-red/20">2</div>
+        <h3 class="text-xl font-semibold text-neutral-900 dark:text-white">Verificá la firma HMAC</h3>
         <p class="mt-3 text-neutral-600 dark:text-neutral-400">
           Toda solicitud de BipBip incluye el header
           <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">X-Bipbip-Signature-256</code>
@@ -308,9 +308,9 @@ const badAckExamples = `<span class="text-neutral-400 dark:text-neutral-500">// 
       </li>
 
       <!-- Step 3 -->
-      <li class="relative pl-14">
-        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">3</div>
-        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Respondé con tu remoteOrderId</h3>
+      <li class="relative pl-16">
+        <div class="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange text-2xl font-bold text-white shadow-lg shadow-bipbip-red/20">3</div>
+        <h3 class="text-xl font-semibold text-neutral-900 dark:text-white">Respondé con tu remoteOrderId</h3>
         <p class="mt-3 text-neutral-600 dark:text-neutral-400">
           Una vez verificada la firma y creada la orden en tu POS, devolvé HTTP 200 con:
         </p>
@@ -322,9 +322,9 @@ const badAckExamples = `<span class="text-neutral-400 dark:text-neutral-500">// 
       </li>
 
       <!-- Step 4 -->
-      <li class="relative pl-14">
-        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">4</div>
-        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Aceptá la orden llamando la REST API</h3>
+      <li class="relative pl-16">
+        <div class="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange text-2xl font-bold text-white shadow-lg shadow-bipbip-red/20">4</div>
+        <h3 class="text-xl font-semibold text-neutral-900 dark:text-white">Aceptá la orden llamando la REST API</h3>
         <p class="mt-3 text-neutral-600 dark:text-neutral-400">
           Después de recibir el webhook y responder 200, podés aceptar formalmente la orden llamando a
           <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono text-bipbip-red dark:text-bipbip-yellow">POST /api/v1/orders/&#123;orderKey&#125;/accept</code>.
@@ -338,11 +338,11 @@ const badAckExamples = `<span class="text-neutral-400 dark:text-neutral-500">// 
           <TabbedCode tabs={acceptTabs} />
         </div>
 
-        <Callout type="info">
-          <Fragment slot="title">Límites de tasa de la REST API</Fragment>
-          La API está limitada a <strong>100 requests por minuto</strong> (ventana fija) y
-          <strong>1.000 requests por hora</strong> (ventana deslizante), particionados por API Key.
-          Si superás el límite recibís HTTP 429 — implementá exponential backoff con jitter en tu cliente.
+        <Callout type="tip">
+          <Fragment slot="title">Rate limits de la REST API</Fragment>
+          Tenés <strong>100 requests por minuto</strong> (ventana fija) y
+          <strong>1.000 por hora</strong> (ventana deslizante), por API Key.
+          Si llegás al límite, BipBip te devuelve HTTP 429 — implementá exponential backoff con jitter y lo manejás sin problemas.
         </Callout>
       </li>
     </ol>
@@ -394,11 +394,10 @@ const badAckExamples = `<span class="text-neutral-400 dark:text-neutral-500">// 
       <li><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-xs font-mono">X-Bipbip-Event-Type</code> — tipo de evento (ej: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.created</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.cancelled</code>)</li>
     </ul>
 
-    <Callout type="info">
-      <Fragment slot="title">Clock skew recomendado: máximo 300 segundos</Fragment>
-      Validá que la diferencia entre <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">X-Bipbip-Timestamp</code>
-      y el reloj de tu servidor no supere los 300 segundos (5 minutos). Esto protege contra ataques de replay donde
-      un request válido es capturado y reenviado horas después.
+    <Callout type="tip">
+      <Fragment slot="title">Clock skew: rechazá requests más viejos de 5 minutos</Fragment>
+      Fijate que la diferencia entre <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Timestamp</code>
+      y tu reloj no supere 300 segundos. Así bloqueás ataques de replay — si alguien captura un request válido y lo reenvía horas después, lo rechazás sin que llegue a ejecutarse.
     </Callout>
   </section>
 

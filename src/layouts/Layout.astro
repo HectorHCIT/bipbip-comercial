@@ -113,6 +113,11 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://develope
             var docHeight = document.documentElement.scrollHeight - window.innerHeight;
             var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
             progressBar.style.width = pct + '%';
+            if (pct >= 95) {
+              progressBar.classList.add('progress-arriving');
+            } else {
+              progressBar.classList.remove('progress-arriving');
+            }
           }
           window.addEventListener('scroll', updateProgress, { passive: true });
           updateProgress();

@@ -28,11 +28,11 @@ const allLinks = [...primaryLinks, ...secondaryLinks];
 
 <header class="sticky top-0 z-50 w-full border-b border-transparent dark:border-border-dark/50 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-xl">
   <nav class="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:pl-8 lg:pr-12">
-    <a href={url('/')} class="flex items-center gap-2 shrink-0">
-      <span class="dark:hidden">
+    <a href={url('/')} id="logo-link" class="flex items-center gap-2 shrink-0">
+      <span id="logo-mark" class="dark:hidden inline-block">
         <LogoAltPrimary width={80} height={32} />
       </span>
-      <span class="hidden dark:inline">
+      <span id="logo-mark-dark" class="hidden dark:inline-block">
         <LogoPrimaryDefault size={32} />
       </span>
       <span class="hidden sm:inline text-xs font-semibold text-neutral-400 dark:text-neutral-500 border-l border-neutral-300 dark:border-border-dark pl-2 ml-1">Developers</span>
@@ -173,6 +173,29 @@ const allLinks = [...primaryLinks, ...secondaryLinks];
 
   initHeader();
   document.addEventListener('astro:page-load', initHeader);
+
+  // Logo click pulse (Easter egg — respects prefers-reduced-motion)
+  function initLogoPulse() {
+    const logoLink = document.getElementById('logo-link');
+    const logoMark = document.getElementById('logo-mark');
+    const logoMarkDark = document.getElementById('logo-mark-dark');
+    if (!logoLink || logoLink.dataset.pulseBound === '1') return;
+    logoLink.dataset.pulseBound = '1';
+
+    logoLink.addEventListener('click', function() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const marks = [logoMark, logoMarkDark].filter(Boolean);
+      marks.forEach(function(el) {
+        el.classList.remove('logo-pulse-active');
+        void el.offsetWidth; // force reflow to restart animation
+        el.classList.add('logo-pulse-active');
+        setTimeout(function() { el.classList.remove('logo-pulse-active'); }, 320);
+      });
+    });
+  }
+
+  initLogoPulse();
+  document.addEventListener('astro:page-load', initLogoPulse);
 
   // Close mobile menu on route change — document listener registered ONCE.
   if (!document.__headerNavBound) {
