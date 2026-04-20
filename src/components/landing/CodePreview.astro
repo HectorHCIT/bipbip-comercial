@@ -1,62 +1,92 @@
 ---
 import TabbedCode from '../docs/TabbedCode.astro';
 import FloatingIcons from '../FloatingIcons.astro';
+import { useTranslations } from '../../i18n/ui';
+import { getRelativeLocaleUrl } from 'astro:i18n';
 
-const curlCode = `<span class="text-neutral-400 dark:text-neutral-500"># Create a new delivery order</span>
-<span class="text-bipbip-red dark:text-bipbip-yellow">curl</span> <span class="text-neutral-500 dark:text-neutral-400">-X POST</span> https://api.bipbip.hn/v1/orders <span class="text-neutral-500 dark:text-neutral-400">\\</span>
-  <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"Authorization: Bearer sk_live_..."</span> <span class="text-neutral-500 dark:text-neutral-400">\\</span>
-  <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"Content-Type: application/json"</span> <span class="text-neutral-500 dark:text-neutral-400">\\</span>
-  <span class="text-neutral-500 dark:text-neutral-400">-d</span> <span class="text-green-700 dark:text-green-400">'{
-    "restaurant_id": "rst_a1b2c3",
-    "items": [{"id": "item_x7y8z9", "qty": 2}],
-    "delivery_address": {
-      "lat": 14.0723,
-      "lng": -87.1921
-    }
-  }'</span>`;
+const t = useTranslations(Astro.currentLocale);
+const cp = t.codePreview;
+const locale = Astro.currentLocale ?? 'es';
+const url = (path: string) => getRelativeLocaleUrl(locale, path);
 
-const jsCode = `<span class="text-blue-600 dark:text-blue-400">const</span> response = <span class="text-blue-600 dark:text-blue-400">await</span> <span class="text-amber-600 dark:text-amber-400">fetch</span>(<span class="text-green-700 dark:text-green-400">'https://api.bipbip.hn/v1/orders'</span>, {
-  <span class="text-blue-600 dark:text-blue-400">method</span>: <span class="text-green-700 dark:text-green-400">'POST'</span>,
-  <span class="text-blue-600 dark:text-blue-400">headers</span>: {
-    <span class="text-green-700 dark:text-green-400">'Authorization'</span>: <span class="text-green-700 dark:text-green-400">'Bearer sk_live_...'</span>,
-    <span class="text-green-700 dark:text-green-400">'Content-Type'</span>: <span class="text-green-700 dark:text-green-400">'application/json'</span>,
-  },
-  <span class="text-blue-600 dark:text-blue-400">body</span>: <span class="text-amber-600 dark:text-amber-400">JSON</span>.<span class="text-amber-600 dark:text-amber-400">stringify</span>({
-    <span class="text-blue-600 dark:text-blue-400">restaurant_id</span>: <span class="text-green-700 dark:text-green-400">'rst_a1b2c3'</span>,
-    <span class="text-blue-600 dark:text-blue-400">items</span>: [{ <span class="text-blue-600 dark:text-blue-400">id</span>: <span class="text-green-700 dark:text-green-400">'item_x7y8z9'</span>, <span class="text-blue-600 dark:text-blue-400">qty</span>: <span class="text-amber-600 dark:text-amber-400">2</span> }],
-    <span class="text-blue-600 dark:text-blue-400">delivery_address</span>: {
-      <span class="text-blue-600 dark:text-blue-400">lat</span>: <span class="text-amber-600 dark:text-amber-400">14.0723</span>,
-      <span class="text-blue-600 dark:text-blue-400">lng</span>: <span class="text-amber-600 dark:text-amber-400">-87.1921</span>,
-    },
-  }),
-});
+const nodeCode = `<span class="text-neutral-400 dark:text-neutral-500">// HMAC-SHA256 verification — Node.js (built-in crypto)</span>
+<span class="text-blue-600 dark:text-blue-400">const</span> crypto = <span class="text-amber-600 dark:text-amber-400">require</span>(<span class="text-green-700 dark:text-green-400">'crypto'</span>);
 
-<span class="text-blue-600 dark:text-blue-400">const</span> order = <span class="text-blue-600 dark:text-blue-400">await</span> response.<span class="text-amber-600 dark:text-amber-400">json</span>();`;
+<span class="text-blue-600 dark:text-blue-400">function</span> <span class="text-amber-600 dark:text-amber-400">verifyBipBipSignature</span>(secret, timestamp, rawBody, signature) {
+  <span class="text-neutral-400 dark:text-neutral-500">// Reject requests older than 5 minutes (replay protection)</span>
+  <span class="text-blue-600 dark:text-blue-400">const</span> now = <span class="text-amber-600 dark:text-amber-400">Math</span>.<span class="text-amber-600 dark:text-amber-400">floor</span>(<span class="text-amber-600 dark:text-amber-400">Date</span>.<span class="text-amber-600 dark:text-amber-400">now</span>() / <span class="text-amber-600 dark:text-amber-400">1000</span>);
+  <span class="text-blue-600 dark:text-blue-400">if</span> (<span class="text-amber-600 dark:text-amber-400">Math</span>.<span class="text-amber-600 dark:text-amber-400">abs</span>(now - <span class="text-amber-600 dark:text-amber-400">parseInt</span>(timestamp, <span class="text-amber-600 dark:text-amber-400">10</span>)) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>) <span class="text-blue-600 dark:text-blue-400">return false</span>;
 
-const pythonCode = `<span class="text-blue-600 dark:text-blue-400">import</span> requests
+  <span class="text-neutral-400 dark:text-neutral-500">// Sign the RAW body — never JSON.parse + re-serialize</span>
+  <span class="text-blue-600 dark:text-blue-400">const</span> message = <span class="text-green-700 dark:text-green-400">\`\${timestamp}.\${rawBody}\`</span>;
+  <span class="text-blue-600 dark:text-blue-400">const</span> computed = crypto
+    .<span class="text-amber-600 dark:text-amber-400">createHmac</span>(<span class="text-green-700 dark:text-green-400">'sha256'</span>, secret)
+    .<span class="text-amber-600 dark:text-amber-400">update</span>(message, <span class="text-green-700 dark:text-green-400">'utf8'</span>)
+    .<span class="text-amber-600 dark:text-amber-400">digest</span>(<span class="text-green-700 dark:text-green-400">'hex'</span>);
+  <span class="text-blue-600 dark:text-blue-400">const</span> expected = <span class="text-green-700 dark:text-green-400">\`sha256=\${computed}\`</span>;
 
-response = requests.<span class="text-amber-600 dark:text-amber-400">post</span>(
-    <span class="text-green-700 dark:text-green-400">"https://api.bipbip.hn/v1/orders"</span>,
-    <span class="text-blue-600 dark:text-blue-400">headers</span>={
-        <span class="text-green-700 dark:text-green-400">"Authorization"</span>: <span class="text-green-700 dark:text-green-400">"Bearer sk_live_..."</span>,
-        <span class="text-green-700 dark:text-green-400">"Content-Type"</span>: <span class="text-green-700 dark:text-green-400">"application/json"</span>,
-    },
-    <span class="text-blue-600 dark:text-blue-400">json</span>={
-        <span class="text-green-700 dark:text-green-400">"restaurant_id"</span>: <span class="text-green-700 dark:text-green-400">"rst_a1b2c3"</span>,
-        <span class="text-green-700 dark:text-green-400">"items"</span>: [{<span class="text-green-700 dark:text-green-400">"id"</span>: <span class="text-green-700 dark:text-green-400">"item_x7y8z9"</span>, <span class="text-green-700 dark:text-green-400">"qty"</span>: <span class="text-amber-600 dark:text-amber-400">2</span>}],
-        <span class="text-green-700 dark:text-green-400">"delivery_address"</span>: {
-            <span class="text-green-700 dark:text-green-400">"lat"</span>: <span class="text-amber-600 dark:text-amber-400">14.0723</span>,
-            <span class="text-green-700 dark:text-green-400">"lng"</span>: <span class="text-amber-600 dark:text-amber-400">-87.1921</span>,
-        },
-    },
-)
+  <span class="text-neutral-400 dark:text-neutral-500">// Timing-safe comparison (never use === on signatures)</span>
+  <span class="text-blue-600 dark:text-blue-400">const</span> a = <span class="text-amber-600 dark:text-amber-400">Buffer</span>.<span class="text-amber-600 dark:text-amber-400">from</span>(expected, <span class="text-green-700 dark:text-green-400">'utf8'</span>);
+  <span class="text-blue-600 dark:text-blue-400">const</span> b = <span class="text-amber-600 dark:text-amber-400">Buffer</span>.<span class="text-amber-600 dark:text-amber-400">from</span>(signature, <span class="text-green-700 dark:text-green-400">'utf8'</span>);
+  <span class="text-blue-600 dark:text-blue-400">if</span> (a.length !== b.length) <span class="text-blue-600 dark:text-blue-400">return false</span>;
+  <span class="text-blue-600 dark:text-blue-400">return</span> crypto.<span class="text-amber-600 dark:text-amber-400">timingSafeEqual</span>(a, b);
+}`;
 
-order = response.<span class="text-amber-600 dark:text-amber-400">json</span>()`;
+const pythonCode = `<span class="text-neutral-400 dark:text-neutral-500"># HMAC-SHA256 verification — Python (stdlib only)</span>
+<span class="text-blue-600 dark:text-blue-400">import</span> hmac, hashlib, time
+
+<span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-amber-600 dark:text-amber-400">verify_bipbip_signature</span>(secret: <span class="text-amber-600 dark:text-amber-400">str</span>, timestamp: <span class="text-amber-600 dark:text-amber-400">str</span>, raw_body: <span class="text-amber-600 dark:text-amber-400">bytes</span>, signature: <span class="text-amber-600 dark:text-amber-400">str</span>) -&gt; <span class="text-amber-600 dark:text-amber-400">bool</span>:
+    <span class="text-neutral-400 dark:text-neutral-500"># Reject requests older than 5 minutes</span>
+    <span class="text-blue-600 dark:text-blue-400">if</span> <span class="text-amber-600 dark:text-amber-400">abs</span>(<span class="text-amber-600 dark:text-amber-400">int</span>(time.time()) - <span class="text-amber-600 dark:text-amber-400">int</span>(timestamp)) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>:
+        <span class="text-blue-600 dark:text-blue-400">return False</span>
+
+    <span class="text-neutral-400 dark:text-neutral-500"># Build the exact message BipBip signed: "{ts}.{rawBody}"</span>
+    message = <span class="text-amber-600 dark:text-amber-400">f</span><span class="text-green-700 dark:text-green-400">"{timestamp}."</span>.encode(<span class="text-green-700 dark:text-green-400">"utf-8"</span>) + raw_body
+    computed = hmac.<span class="text-amber-600 dark:text-amber-400">new</span>(secret.encode(<span class="text-green-700 dark:text-green-400">"utf-8"</span>), message, hashlib.sha256).hexdigest()
+    expected = <span class="text-amber-600 dark:text-amber-400">f</span><span class="text-green-700 dark:text-green-400">"sha256={computed}"</span>
+
+    <span class="text-neutral-400 dark:text-neutral-500"># Timing-safe comparison</span>
+    <span class="text-blue-600 dark:text-blue-400">return</span> hmac.<span class="text-amber-600 dark:text-amber-400">compare_digest</span>(expected, signature)`;
+
+const csharpCode = `<span class="text-neutral-400 dark:text-neutral-500">// HMAC-SHA256 verification — C# (.NET 6+)</span>
+<span class="text-blue-600 dark:text-blue-400">using</span> System.Security.Cryptography;
+<span class="text-blue-600 dark:text-blue-400">using</span> System.Text;
+
+<span class="text-blue-600 dark:text-blue-400">public static bool</span> <span class="text-amber-600 dark:text-amber-400">VerifyBipBipSignature</span>(<span class="text-blue-600 dark:text-blue-400">string</span> secret, <span class="text-blue-600 dark:text-blue-400">string</span> timestamp, <span class="text-blue-600 dark:text-blue-400">byte</span>[] rawBody, <span class="text-blue-600 dark:text-blue-400">string</span> signature) {
+    <span class="text-neutral-400 dark:text-neutral-500">// Reject requests older than 5 minutes</span>
+    <span class="text-blue-600 dark:text-blue-400">var</span> now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    <span class="text-blue-600 dark:text-blue-400">if</span> (Math.Abs(now - <span class="text-amber-600 dark:text-amber-400">long</span>.Parse(timestamp)) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>) <span class="text-blue-600 dark:text-blue-400">return false</span>;
+
+    <span class="text-blue-600 dark:text-blue-400">var</span> prefix = Encoding.UTF8.GetBytes(<span class="text-green-700 dark:text-green-400">$"{timestamp}."</span>);
+    <span class="text-blue-600 dark:text-blue-400">var</span> message = prefix.Concat(rawBody).ToArray();
+
+    <span class="text-blue-600 dark:text-blue-400">using var</span> hmac = <span class="text-blue-600 dark:text-blue-400">new</span> HMACSHA256(Encoding.UTF8.GetBytes(secret));
+    <span class="text-blue-600 dark:text-blue-400">var</span> computed = Convert.ToHexString(hmac.ComputeHash(message)).ToLowerInvariant();
+    <span class="text-blue-600 dark:text-blue-400">var</span> expected = Encoding.UTF8.GetBytes(<span class="text-green-700 dark:text-green-400">$"sha256={computed}"</span>);
+    <span class="text-blue-600 dark:text-blue-400">var</span> received = Encoding.UTF8.GetBytes(signature);
+
+    <span class="text-blue-600 dark:text-blue-400">return</span> CryptographicOperations.FixedTimeEquals(expected, received);
+}`;
+
+const phpCode = `<span class="text-neutral-400 dark:text-neutral-500">// HMAC-SHA256 verification — PHP 7.2+</span>
+<span class="text-blue-600 dark:text-blue-400">function</span> <span class="text-amber-600 dark:text-amber-400">verify_bipbip_signature</span>(<span class="text-blue-600 dark:text-blue-400">string</span> $secret, <span class="text-blue-600 dark:text-blue-400">string</span> $timestamp, <span class="text-blue-600 dark:text-blue-400">string</span> $rawBody, <span class="text-blue-600 dark:text-blue-400">string</span> $signature): <span class="text-blue-600 dark:text-blue-400">bool</span> {
+    <span class="text-neutral-400 dark:text-neutral-500">// Reject requests older than 5 minutes</span>
+    <span class="text-blue-600 dark:text-blue-400">if</span> (<span class="text-amber-600 dark:text-amber-400">abs</span>(<span class="text-amber-600 dark:text-amber-400">time</span>() - (<span class="text-blue-600 dark:text-blue-400">int</span>)$timestamp) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>) <span class="text-blue-600 dark:text-blue-400">return false</span>;
+
+    <span class="text-neutral-400 dark:text-neutral-500">// Sign the raw body — never re-serialize the parsed JSON</span>
+    $message  = $timestamp . <span class="text-green-700 dark:text-green-400">'.'</span> . $rawBody;
+    $computed = <span class="text-amber-600 dark:text-amber-400">hash_hmac</span>(<span class="text-green-700 dark:text-green-400">'sha256'</span>, $message, $secret);
+    $expected = <span class="text-green-700 dark:text-green-400">'sha256='</span> . $computed;
+
+    <span class="text-neutral-400 dark:text-neutral-500">// Constant-time comparison to avoid timing oracles</span>
+    <span class="text-blue-600 dark:text-blue-400">return</span> <span class="text-amber-600 dark:text-amber-400">hash_equals</span>($expected, $signature);
+}`;
 
 const tabs = [
-  { label: 'curl', filename: 'create-order.sh', code: curlCode },
-  { label: 'JavaScript', filename: 'create-order.js', code: jsCode },
-  { label: 'Python', filename: 'create-order.py', code: pythonCode },
+  { label: 'Node.js', filename: 'hmac-verify.node.js', code: nodeCode },
+  { label: 'Python', filename: 'hmac-verify.py', code: pythonCode },
+  { label: 'C#', filename: 'HmacVerify.cs', code: csharpCode },
+  { label: 'PHP', filename: 'hmac-verify.php', code: phpCode },
 ];
 ---
 
@@ -65,17 +95,32 @@ const tabs = [
   <div class="grid items-center gap-12 lg:grid-cols-2">
     <!-- Left: text -->
     <div>
-      <h2 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-        Ship your first integration in minutes
+      <span class="inline-flex items-center rounded-full border border-bipbip-red/20 bg-bipbip-red/5 px-3 py-1 text-xs font-medium text-bipbip-red dark:border-bipbip-red/30 dark:bg-bipbip-red/10">
+        {cp.badge}
+      </span>
+      <h2 class="mt-4 text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+        {cp.title}
       </h2>
-      <p class="mt-4 text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
-        Our RESTful API is designed for simplicity. Pick your language, authenticate, and you're live.
-      </p>
+      <p class="mt-4 text-lg leading-relaxed text-neutral-600 dark:text-neutral-400" set:html={cp.paragraphHtml} />
+      <ul class="mt-6 space-y-2 text-sm text-neutral-600 dark:text-neutral-400">
+        <li class="flex items-start gap-2">
+          <svg class="mt-0.5 h-4 w-4 shrink-0 text-bipbip-red" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          {cp.bullet1}
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="mt-0.5 h-4 w-4 shrink-0 text-bipbip-red" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">timingSafeEqual</code> / <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">compare_digest</code> / <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">hash_equals</code>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="mt-0.5 h-4 w-4 shrink-0 text-bipbip-red" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          <span set:html={cp.bullet3Html} />
+        </li>
+      </ul>
       <a
-        href="/docs"
+        href={url('/docs') + '#hmac'}
         class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-bipbip-red hover:text-bipbip-red-dark transition-colors duration-150"
       >
-        Read the quickstart guide
+        {cp.cta}
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
         </svg>

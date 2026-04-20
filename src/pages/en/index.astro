@@ -1,0 +1,19 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/landing/Hero.astro';
+import FeaturesGrid from '../../components/landing/FeaturesGrid.astro';
+import CodePreview from '../../components/landing/CodePreview.astro';
+import GettingStarted from '../../components/landing/GettingStarted.astro';
+import CTAFooter from '../../components/landing/CTAFooter.astro';
+---
+
+<Layout
+  title="BipBip Merchant Integration API — Developer Portal"
+  description="Two API contracts and a step-by-step guide to integrate your POS with BipBip. HMAC-signed webhooks, REST API with Idempotency-Key and samples in 4 languages."
+>
+  <Hero />
+  <FeaturesGrid />
+  <CodePreview />
+  <GettingStarted />
+  <CTAFooter />
+</Layout>

@@ -1,0 +1,682 @@
+---
+import DocsLayout from '../../components/docs/DocsLayout.astro';
+import SidebarGroup from '../../components/docs/SidebarGroup.astro';
+import SidebarLink from '../../components/docs/SidebarLink.astro';
+import TabbedCode from '../../components/docs/TabbedCode.astro';
+import Callout from '../../components/docs/Callout.astro';
+
+// ── HMAC verify samples (Node / Python / C# / PHP) ─────────────────────────
+const hmacNode = `<span class="text-neutral-400 dark:text-neutral-500">// HMAC-SHA256 webhook verification — Node.js (built-in crypto only)</span>
+<span class="text-blue-600 dark:text-blue-400">const</span> crypto = <span class="text-amber-600 dark:text-amber-400">require</span>(<span class="text-green-700 dark:text-green-400">'crypto'</span>);
+
+<span class="text-blue-600 dark:text-blue-400">function</span> <span class="text-amber-600 dark:text-amber-400">verifyBipBipSignature</span>(secret, timestamp, rawBody, signature) {
+  <span class="text-blue-600 dark:text-blue-400">const</span> now = <span class="text-amber-600 dark:text-amber-400">Math</span>.<span class="text-amber-600 dark:text-amber-400">floor</span>(<span class="text-amber-600 dark:text-amber-400">Date</span>.<span class="text-amber-600 dark:text-amber-400">now</span>() / <span class="text-amber-600 dark:text-amber-400">1000</span>);
+  <span class="text-blue-600 dark:text-blue-400">if</span> (<span class="text-amber-600 dark:text-amber-400">Math</span>.<span class="text-amber-600 dark:text-amber-400">abs</span>(now - <span class="text-amber-600 dark:text-amber-400">parseInt</span>(timestamp, <span class="text-amber-600 dark:text-amber-400">10</span>)) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>) <span class="text-blue-600 dark:text-blue-400">return false</span>;
+
+  <span class="text-blue-600 dark:text-blue-400">const</span> message  = <span class="text-green-700 dark:text-green-400">\`\${timestamp}.\${rawBody}\`</span>;
+  <span class="text-blue-600 dark:text-blue-400">const</span> computed = crypto.<span class="text-amber-600 dark:text-amber-400">createHmac</span>(<span class="text-green-700 dark:text-green-400">'sha256'</span>, secret).<span class="text-amber-600 dark:text-amber-400">update</span>(message, <span class="text-green-700 dark:text-green-400">'utf8'</span>).<span class="text-amber-600 dark:text-amber-400">digest</span>(<span class="text-green-700 dark:text-green-400">'hex'</span>);
+  <span class="text-blue-600 dark:text-blue-400">const</span> expected = <span class="text-green-700 dark:text-green-400">\`sha256=\${computed}\`</span>;
+
+  <span class="text-blue-600 dark:text-blue-400">const</span> a = <span class="text-amber-600 dark:text-amber-400">Buffer</span>.<span class="text-amber-600 dark:text-amber-400">from</span>(expected, <span class="text-green-700 dark:text-green-400">'utf8'</span>);
+  <span class="text-blue-600 dark:text-blue-400">const</span> b = <span class="text-amber-600 dark:text-amber-400">Buffer</span>.<span class="text-amber-600 dark:text-amber-400">from</span>(signature, <span class="text-green-700 dark:text-green-400">'utf8'</span>);
+  <span class="text-blue-600 dark:text-blue-400">if</span> (a.length !== b.length) <span class="text-blue-600 dark:text-blue-400">return false</span>;
+  <span class="text-blue-600 dark:text-blue-400">return</span> crypto.<span class="text-amber-600 dark:text-amber-400">timingSafeEqual</span>(a, b);
+}`;
+
+const hmacPython = `<span class="text-neutral-400 dark:text-neutral-500"># HMAC-SHA256 webhook verification — Python (stdlib only)</span>
+<span class="text-blue-600 dark:text-blue-400">import</span> hmac, hashlib, time
+
+<span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-amber-600 dark:text-amber-400">verify_bipbip_signature</span>(secret: <span class="text-amber-600 dark:text-amber-400">str</span>, timestamp: <span class="text-amber-600 dark:text-amber-400">str</span>, raw_body: <span class="text-amber-600 dark:text-amber-400">bytes</span>, signature: <span class="text-amber-600 dark:text-amber-400">str</span>) -&gt; <span class="text-amber-600 dark:text-amber-400">bool</span>:
+    <span class="text-blue-600 dark:text-blue-400">if</span> <span class="text-amber-600 dark:text-amber-400">abs</span>(<span class="text-amber-600 dark:text-amber-400">int</span>(time.time()) - <span class="text-amber-600 dark:text-amber-400">int</span>(timestamp)) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>:
+        <span class="text-blue-600 dark:text-blue-400">return False</span>
+
+    message  = <span class="text-amber-600 dark:text-amber-400">f</span><span class="text-green-700 dark:text-green-400">"{timestamp}."</span>.encode(<span class="text-green-700 dark:text-green-400">"utf-8"</span>) + raw_body
+    computed = hmac.<span class="text-amber-600 dark:text-amber-400">new</span>(secret.encode(<span class="text-green-700 dark:text-green-400">"utf-8"</span>), message, hashlib.sha256).hexdigest()
+    expected = <span class="text-amber-600 dark:text-amber-400">f</span><span class="text-green-700 dark:text-green-400">"sha256={computed}"</span>
+
+    <span class="text-blue-600 dark:text-blue-400">return</span> hmac.<span class="text-amber-600 dark:text-amber-400">compare_digest</span>(expected, signature)`;
+
+const hmacCsharp = `<span class="text-neutral-400 dark:text-neutral-500">// HMAC-SHA256 webhook verification — C# (.NET 6+)</span>
+<span class="text-blue-600 dark:text-blue-400">using</span> System.Security.Cryptography;
+<span class="text-blue-600 dark:text-blue-400">using</span> System.Text;
+
+<span class="text-blue-600 dark:text-blue-400">public static bool</span> <span class="text-amber-600 dark:text-amber-400">VerifyBipBipSignature</span>(<span class="text-blue-600 dark:text-blue-400">string</span> secret, <span class="text-blue-600 dark:text-blue-400">string</span> timestamp, <span class="text-blue-600 dark:text-blue-400">byte</span>[] rawBody, <span class="text-blue-600 dark:text-blue-400">string</span> signature) {
+    <span class="text-blue-600 dark:text-blue-400">var</span> now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    <span class="text-blue-600 dark:text-blue-400">if</span> (Math.Abs(now - <span class="text-amber-600 dark:text-amber-400">long</span>.Parse(timestamp)) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>) <span class="text-blue-600 dark:text-blue-400">return false</span>;
+
+    <span class="text-blue-600 dark:text-blue-400">var</span> prefix  = Encoding.UTF8.GetBytes(<span class="text-green-700 dark:text-green-400">$"{timestamp}."</span>);
+    <span class="text-blue-600 dark:text-blue-400">var</span> message = prefix.Concat(rawBody).ToArray();
+
+    <span class="text-blue-600 dark:text-blue-400">using var</span> hmac    = <span class="text-blue-600 dark:text-blue-400">new</span> HMACSHA256(Encoding.UTF8.GetBytes(secret));
+    <span class="text-blue-600 dark:text-blue-400">var</span> computed       = Convert.ToHexString(hmac.ComputeHash(message)).ToLowerInvariant();
+    <span class="text-blue-600 dark:text-blue-400">var</span> expectedBytes  = Encoding.UTF8.GetBytes(<span class="text-green-700 dark:text-green-400">$"sha256={computed}"</span>);
+    <span class="text-blue-600 dark:text-blue-400">var</span> receivedBytes  = Encoding.UTF8.GetBytes(signature);
+
+    <span class="text-blue-600 dark:text-blue-400">return</span> CryptographicOperations.FixedTimeEquals(expectedBytes, receivedBytes);
+}`;
+
+const hmacPhp = `<span class="text-neutral-400 dark:text-neutral-500">// HMAC-SHA256 webhook verification — PHP 7.2+</span>
+<span class="text-blue-600 dark:text-blue-400">function</span> <span class="text-amber-600 dark:text-amber-400">verify_bipbip_signature</span>(<span class="text-blue-600 dark:text-blue-400">string</span> $secret, <span class="text-blue-600 dark:text-blue-400">string</span> $timestamp, <span class="text-blue-600 dark:text-blue-400">string</span> $rawBody, <span class="text-blue-600 dark:text-blue-400">string</span> $signature): <span class="text-blue-600 dark:text-blue-400">bool</span> {
+    <span class="text-blue-600 dark:text-blue-400">if</span> (<span class="text-amber-600 dark:text-amber-400">abs</span>(<span class="text-amber-600 dark:text-amber-400">time</span>() - (<span class="text-blue-600 dark:text-blue-400">int</span>)$timestamp) &gt; <span class="text-amber-600 dark:text-amber-400">300</span>) <span class="text-blue-600 dark:text-blue-400">return false</span>;
+
+    $message  = $timestamp . <span class="text-green-700 dark:text-green-400">'.'</span> . $rawBody;
+    $computed = <span class="text-amber-600 dark:text-amber-400">hash_hmac</span>(<span class="text-green-700 dark:text-green-400">'sha256'</span>, $message, $secret);
+    $expected = <span class="text-green-700 dark:text-green-400">'sha256='</span> . $computed;
+
+    <span class="text-blue-600 dark:text-blue-400">return</span> <span class="text-amber-600 dark:text-amber-400">hash_equals</span>($expected, $signature);
+}`;
+
+const hmacTabs = [
+  { label: 'Node.js', filename: 'hmac-verify.node.js', code: hmacNode },
+  { label: 'Python', filename: 'hmac-verify.py', code: hmacPython },
+  { label: 'C#', filename: 'HmacVerify.cs', code: hmacCsharp },
+  { label: 'PHP', filename: 'hmac-verify.php', code: hmacPhp },
+];
+
+// ── Accept-order samples ───────────────────────────────────────────────────
+const acceptNode = `<span class="text-neutral-400 dark:text-neutral-500">// Accept a BipBip order — Node.js 18+ (native fetch)</span>
+<span class="text-blue-600 dark:text-blue-400">const</span> API_BASE = <span class="text-green-700 dark:text-green-400">'https://api.bipbip.com'</span>;
+<span class="text-blue-600 dark:text-blue-400">const</span> API_KEY  = process.env.<span class="text-amber-600 dark:text-amber-400">BIPBIP_API_KEY</span>;
+
+<span class="text-blue-600 dark:text-blue-400">async function</span> <span class="text-amber-600 dark:text-amber-400">acceptOrder</span>(orderKey, remoteOrderId, idempotencyKey) {
+  <span class="text-blue-600 dark:text-blue-400">const</span> url = <span class="text-green-700 dark:text-green-400">\`\${API_BASE}/api/v1/orders/\${encodeURIComponent(orderKey)}/accept\`</span>;
+
+  <span class="text-blue-600 dark:text-blue-400">const</span> response = <span class="text-blue-600 dark:text-blue-400">await</span> <span class="text-amber-600 dark:text-amber-400">fetch</span>(url, {
+    <span class="text-blue-600 dark:text-blue-400">method</span>: <span class="text-green-700 dark:text-green-400">'POST'</span>,
+    <span class="text-blue-600 dark:text-blue-400">headers</span>: {
+      <span class="text-green-700 dark:text-green-400">'Content-Type'</span>:     <span class="text-green-700 dark:text-green-400">'application/json'</span>,
+      <span class="text-green-700 dark:text-green-400">'X-Bipbip-Api-Key'</span>: API_KEY,
+      <span class="text-green-700 dark:text-green-400">'Idempotency-Key'</span>: idempotencyKey,
+    },
+    <span class="text-blue-600 dark:text-blue-400">body</span>: <span class="text-amber-600 dark:text-amber-400">JSON</span>.<span class="text-amber-600 dark:text-amber-400">stringify</span>({ remoteOrderId }),
+  });
+
+  <span class="text-blue-600 dark:text-blue-400">if</span> (!response.ok) <span class="text-blue-600 dark:text-blue-400">throw new</span> <span class="text-amber-600 dark:text-amber-400">Error</span>(<span class="text-green-700 dark:text-green-400">\`Accept failed: \${response.status}\`</span>);
+  <span class="text-blue-600 dark:text-blue-400">return</span> response.<span class="text-amber-600 dark:text-amber-400">json</span>();
+}`;
+
+const acceptPython = `<span class="text-neutral-400 dark:text-neutral-500"># Accept a BipBip order — Python 3.8+ (requests)</span>
+<span class="text-blue-600 dark:text-blue-400">import</span> os, uuid, requests
+
+API_BASE = <span class="text-green-700 dark:text-green-400">"https://api.bipbip.com"</span>
+API_KEY  = os.environ[<span class="text-green-700 dark:text-green-400">"BIPBIP_API_KEY"</span>]
+
+<span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-amber-600 dark:text-amber-400">accept_order</span>(order_key: <span class="text-amber-600 dark:text-amber-400">str</span>, remote_order_id: <span class="text-amber-600 dark:text-amber-400">str</span>, idempotency_key: <span class="text-amber-600 dark:text-amber-400">str</span>) -&gt; <span class="text-amber-600 dark:text-amber-400">dict</span>:
+    url = <span class="text-amber-600 dark:text-amber-400">f</span><span class="text-green-700 dark:text-green-400">"{API_BASE}/api/v1/orders/{order_key}/accept"</span>
+    headers = {
+        <span class="text-green-700 dark:text-green-400">"Content-Type"</span>:     <span class="text-green-700 dark:text-green-400">"application/json"</span>,
+        <span class="text-green-700 dark:text-green-400">"X-Bipbip-Api-Key"</span>: API_KEY,
+        <span class="text-green-700 dark:text-green-400">"Idempotency-Key"</span>: idempotency_key,
+    }
+    response = requests.<span class="text-amber-600 dark:text-amber-400">post</span>(url, json={<span class="text-green-700 dark:text-green-400">"remoteOrderId"</span>: remote_order_id}, headers=headers, timeout=<span class="text-amber-600 dark:text-amber-400">10</span>)
+    response.<span class="text-amber-600 dark:text-amber-400">raise_for_status</span>()
+    <span class="text-blue-600 dark:text-blue-400">return</span> response.<span class="text-amber-600 dark:text-amber-400">json</span>()`;
+
+const acceptCsharp = `<span class="text-neutral-400 dark:text-neutral-500">// Accept a BipBip order — C# (.NET 6+)</span>
+<span class="text-blue-600 dark:text-blue-400">using</span> System.Net.Http.Json;
+
+<span class="text-blue-600 dark:text-blue-400">public async</span> Task&lt;<span class="text-blue-600 dark:text-blue-400">object</span>&gt; <span class="text-amber-600 dark:text-amber-400">AcceptOrderAsync</span>(<span class="text-blue-600 dark:text-blue-400">string</span> orderKey, <span class="text-blue-600 dark:text-blue-400">string</span> remoteOrderId, <span class="text-blue-600 dark:text-blue-400">string</span> idempotencyKey) {
+    <span class="text-blue-600 dark:text-blue-400">using var</span> http = <span class="text-blue-600 dark:text-blue-400">new</span> HttpClient { BaseAddress = <span class="text-blue-600 dark:text-blue-400">new</span> Uri(<span class="text-green-700 dark:text-green-400">"https://api.bipbip.com"</span>) };
+    <span class="text-blue-600 dark:text-blue-400">using var</span> req  = <span class="text-blue-600 dark:text-blue-400">new</span> HttpRequestMessage(HttpMethod.Post, <span class="text-green-700 dark:text-green-400">$"/api/v1/orders/{Uri.EscapeDataString(orderKey)}/accept"</span>);
+
+    req.Headers.Add(<span class="text-green-700 dark:text-green-400">"X-Bipbip-Api-Key"</span>, Environment.GetEnvironmentVariable(<span class="text-green-700 dark:text-green-400">"BIPBIP_API_KEY"</span>));
+    req.Headers.Add(<span class="text-green-700 dark:text-green-400">"Idempotency-Key"</span>, idempotencyKey);
+    req.Content = JsonContent.Create(<span class="text-blue-600 dark:text-blue-400">new</span> { remoteOrderId });
+
+    <span class="text-blue-600 dark:text-blue-400">var</span> response = <span class="text-blue-600 dark:text-blue-400">await</span> http.SendAsync(req);
+    response.EnsureSuccessStatusCode();
+    <span class="text-blue-600 dark:text-blue-400">return</span> (<span class="text-blue-600 dark:text-blue-400">await</span> response.Content.ReadFromJsonAsync&lt;<span class="text-blue-600 dark:text-blue-400">object</span>&gt;())!;
+}`;
+
+const acceptPhp = `<span class="text-neutral-400 dark:text-neutral-500">// Accept a BipBip order — PHP 7.4+ (curl)</span>
+<span class="text-blue-600 dark:text-blue-400">function</span> <span class="text-amber-600 dark:text-amber-400">accept_order</span>(<span class="text-blue-600 dark:text-blue-400">string</span> $orderKey, <span class="text-blue-600 dark:text-blue-400">string</span> $remoteOrderId, <span class="text-blue-600 dark:text-blue-400">string</span> $idempotencyKey): <span class="text-blue-600 dark:text-blue-400">array</span> {
+    $url = <span class="text-green-700 dark:text-green-400">'https://api.bipbip.com/api/v1/orders/'</span> . <span class="text-amber-600 dark:text-amber-400">urlencode</span>($orderKey) . <span class="text-green-700 dark:text-green-400">'/accept'</span>;
+    $ch  = <span class="text-amber-600 dark:text-amber-400">curl_init</span>($url);
+
+    <span class="text-amber-600 dark:text-amber-400">curl_setopt_array</span>($ch, [
+        CURLOPT_POST           =&gt; <span class="text-blue-600 dark:text-blue-400">true</span>,
+        CURLOPT_RETURNTRANSFER =&gt; <span class="text-blue-600 dark:text-blue-400">true</span>,
+        CURLOPT_POSTFIELDS     =&gt; <span class="text-amber-600 dark:text-amber-400">json_encode</span>([<span class="text-green-700 dark:text-green-400">'remoteOrderId'</span> =&gt; $remoteOrderId]),
+        CURLOPT_HTTPHEADER     =&gt; [
+            <span class="text-green-700 dark:text-green-400">'Content-Type: application/json'</span>,
+            <span class="text-green-700 dark:text-green-400">'X-Bipbip-Api-Key: '</span> . <span class="text-amber-600 dark:text-amber-400">getenv</span>(<span class="text-green-700 dark:text-green-400">'BIPBIP_API_KEY'</span>),
+            <span class="text-green-700 dark:text-green-400">'Idempotency-Key: '</span> . $idempotencyKey,
+        ],
+    ]);
+
+    $body = <span class="text-amber-600 dark:text-amber-400">curl_exec</span>($ch);
+    <span class="text-amber-600 dark:text-amber-400">curl_close</span>($ch);
+    <span class="text-blue-600 dark:text-blue-400">return</span> <span class="text-amber-600 dark:text-amber-400">json_decode</span>($body, <span class="text-blue-600 dark:text-blue-400">true</span>);
+}`;
+
+const acceptTabs = [
+  { label: 'Node.js', filename: 'accept-order.node.js', code: acceptNode },
+  { label: 'Python', filename: 'accept-order.py', code: acceptPython },
+  { label: 'C#', filename: 'AcceptOrder.cs', code: acceptCsharp },
+  { label: 'PHP', filename: 'accept-order.php', code: acceptPhp },
+];
+
+// ── Static code blocks ─────────────────────────────────────────────────────
+const algorithmBlock = `message   = <span class="text-green-700 dark:text-green-400">"{timestamp}.{rawBody}"</span>
+keyBytes  = UTF-<span class="text-amber-600 dark:text-amber-400">8</span> bytes of the HMAC secret
+signature = <span class="text-green-700 dark:text-green-400">"sha256="</span> + LOWERCASE(HEX(HMAC-SHA256(keyBytes, UTF8(message))))`;
+
+const ackBody = `{
+  <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>
+}`;
+
+const dedupeExample = `<span class="text-neutral-400 dark:text-neutral-500">// Example: deduplicación con X-Bipbip-Delivery-Id</span>
+<span class="text-blue-600 dark:text-blue-400">const</span> processed = <span class="text-blue-600 dark:text-blue-400">new</span> <span class="text-amber-600 dark:text-amber-400">Set</span>();
+
+app.<span class="text-amber-600 dark:text-amber-400">post</span>(<span class="text-green-700 dark:text-green-400">'/v1/order/:remoteId'</span>, <span class="text-blue-600 dark:text-blue-400">async</span> (req, res) =&gt; {
+  <span class="text-blue-600 dark:text-blue-400">const</span> deliveryId = req.headers[<span class="text-green-700 dark:text-green-400">'x-bipbip-delivery-id'</span>];
+
+  <span class="text-blue-600 dark:text-blue-400">if</span> (processed.<span class="text-amber-600 dark:text-amber-400">has</span>(deliveryId)) {
+    <span class="text-blue-600 dark:text-blue-400">return</span> res.<span class="text-amber-600 dark:text-amber-400">status</span>(<span class="text-amber-600 dark:text-amber-400">200</span>).<span class="text-amber-600 dark:text-amber-400">json</span>({ remoteOrderId: yourStore.<span class="text-amber-600 dark:text-amber-400">getByDeliveryId</span>(deliveryId) });
+  }
+
+  <span class="text-neutral-400 dark:text-neutral-500">// ... verificar HMAC, procesar orden ...</span>
+  processed.<span class="text-amber-600 dark:text-amber-400">add</span>(deliveryId);
+  res.<span class="text-amber-600 dark:text-amber-400">status</span>(<span class="text-amber-600 dark:text-amber-400">200</span>).<span class="text-amber-600 dark:text-amber-400">json</span>({ remoteOrderId });
+});`;
+
+const badAckExamples = `<span class="text-neutral-400 dark:text-neutral-500">// Correcto — BipBip marca el delivery como exitoso</span>
+{ <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-INTERNAL-12345"</span> }
+
+<span class="text-neutral-400 dark:text-neutral-500">// Incorrecto — BipBip trata esto como delivery fallido y reintenta</span>
+{}
+{ <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-purple-600 dark:text-purple-400">null</span> }
+{ <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">""</span> }`;
+---
+
+<DocsLayout title="Integration Guide">
+  <Fragment slot="sidebar">
+    <SidebarGroup title="Quickstart">
+      <SidebarLink href="#quickstart">Introduction</SidebarLink>
+      <SidebarLink href="#preconditions">Prerequisites</SidebarLink>
+      <SidebarLink href="#steps">The 4 steps</SidebarLink>
+      <SidebarLink href="#sandbox">Sandbox</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="HMAC Verification">
+      <SidebarLink href="#hmac">Introduction</SidebarLink>
+      <SidebarLink href="#hmac-algorithm">Algorithm</SidebarLink>
+      <SidebarLink href="#footguns">Common pitfalls</SidebarLink>
+      <SidebarLink href="#hmac-samples">Code samples</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Troubleshooting">
+      <SidebarLink href="#faq-firma">Signature doesn't verify</SidebarLink>
+      <SidebarLink href="#faq-duplicado">Duplicate webhook</SidebarLink>
+      <SidebarLink href="#faq-reintentos">BipBip keeps retrying</SidebarLink>
+      <SidebarLink href="#faq-nada">Not receiving webhooks</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Reference">
+      <SidebarLink href="#glossary">Glossary</SidebarLink>
+    </SidebarGroup>
+  </Fragment>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 1: QUICKSTART
+       ════════════════════════════════════════════ -->
+  <section id="quickstart" class="scroll-mt-24" data-animate>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">First steps</p>
+    <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Quickstart
+    </h1>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      This guide takes you from "I have my credentials" to "I received and confirmed my first order"
+      without any intervention from the BipBip team. Follow the four steps in order.
+    </p>
+
+    <Callout type="danger">
+      <Fragment slot="title">No test environment — direct integration against production</Fragment>
+      BipBip does not have a sandbox available yet. The pilot integrates directly against production
+      with coordination from the team. Coordinate with
+      <a href="mailto:integraciones@bipbip.com" class="font-medium underline">integraciones@bipbip.com</a>
+      before sending test orders.
+    </Callout>
+  </section>
+
+  <section id="preconditions" class="scroll-mt-24 mt-12" data-animate style="transition-delay: 60ms">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Prerequisites
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Before getting started, the BipBip team provides the following configuration items.
+      You need all of them before writing your first line of code:
+    </p>
+    <ul class="mt-4 space-y-3 text-neutral-600 dark:text-neutral-400">
+      <li class="flex items-start gap-3">
+        <span class="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-bipbip-red/10 text-[10px] font-bold text-bipbip-red">1</span>
+        <div><strong class="text-neutral-900 dark:text-white">HMAC Secret</strong> — shared key for verifying webhook authenticity (one per account)</div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-bipbip-red/10 text-[10px] font-bold text-bipbip-red">2</span>
+        <div><strong class="text-neutral-900 dark:text-white">API Key</strong> (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-xs font-mono">X-Bipbip-Api-Key</code>) — authentication header for calling the REST API</div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-bipbip-red/10 text-[10px] font-bold text-bipbip-red">3</span>
+        <div><strong class="text-neutral-900 dark:text-white">remoteId</strong> — your store identifier, defined by you (e.g. <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-xs font-mono">POS_TGU_001</code>). One per registered store.</div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-bipbip-red/10 text-[10px] font-bold text-bipbip-red">4</span>
+        <div><strong class="text-neutral-900 dark:text-white">Registered base URL</strong> — the base URL of your POS where BipBip will send webhooks (must be publicly accessible)</div>
+      </li>
+    </ul>
+  </section>
+
+  <section id="steps" class="scroll-mt-24 mt-12" data-animate style="transition-delay: 80ms">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      The 4 steps
+    </h2>
+
+    <ol class="mt-8 space-y-10">
+      <!-- Step 1 -->
+      <li class="relative pl-14">
+        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">1</div>
+        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Implement the webhook endpoint</h3>
+        <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+          BipBip will send <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono text-bipbip-red dark:text-bipbip-yellow">POST &#123;yourBaseUrl&#125;/v1/order/&#123;remoteId&#125;</code>
+          each time a new order arrives for your store. Your endpoint must:
+        </p>
+        <ul class="mt-3 space-y-1.5 text-sm text-neutral-600 dark:text-neutral-400 list-disc pl-5">
+          <li>Capture the raw body <strong>before</strong> parsing the JSON</li>
+          <li>Verify the HMAC signature (see <a href="#hmac" class="text-bipbip-red hover:underline">HMAC Verification</a>)</li>
+          <li>Return HTTP 200 with a JSON body that includes <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">remoteOrderId</code></li>
+          <li>Respond within 30 seconds (BipBip treats any slow response as a failure)</li>
+        </ul>
+        <Callout type="warning">
+          <Fragment slot="title">remoteOrderId is required</Fragment>
+          Returning HTTP 200 without a valid <code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">remoteOrderId</code>
+          in the body is treated as a failed delivery and BipBip will retry. See
+          <a href="#faq-reintentos" class="font-medium underline">BipBip keeps retrying</a>.
+        </Callout>
+      </li>
+
+      <!-- Step 2 -->
+      <li class="relative pl-14">
+        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">2</div>
+        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Verify the HMAC signature</h3>
+        <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+          Every request from BipBip includes the header
+          <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">X-Bipbip-Signature-256</code>
+          with an HMAC-SHA256 signature. Verifying the signature guarantees that the request originates from BipBip and was not modified in transit.
+          See the <a href="#hmac" class="text-bipbip-red hover:underline">HMAC Verification</a> section for code samples.
+        </p>
+      </li>
+
+      <!-- Step 3 -->
+      <li class="relative pl-14">
+        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">3</div>
+        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Respond with your remoteOrderId</h3>
+        <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+          Once the signature is verified and the order is created in your POS, return HTTP 200 with:
+        </p>
+        <pre class="mt-3 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={ackBody} /></pre>
+        <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+          This value is your POS's internal identifier for this order. BipBip stores it and will include it in all
+          subsequent cancellation webhooks so you can correlate them.
+        </p>
+      </li>
+
+      <!-- Step 4 -->
+      <li class="relative pl-14">
+        <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-bipbip-red to-bipbip-orange font-bold text-white shadow-lg shadow-bipbip-red/20">4</div>
+        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Accept the order by calling the REST API</h3>
+        <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+          After receiving the webhook and responding with 200, you can formally accept the order by calling
+          <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono text-bipbip-red dark:text-bipbip-yellow">POST /api/v1/orders/&#123;orderKey&#125;/accept</code>.
+          This confirms that your POS is ready to prepare the order.
+        </p>
+        <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+          This step is optional if your store has <em>auto-accept</em> enabled — in that case BipBip accepts the order automatically upon receiving your 200.
+        </p>
+
+        <div class="mt-4">
+          <TabbedCode tabs={acceptTabs} />
+        </div>
+
+        <Callout type="info">
+          <Fragment slot="title">REST API rate limits</Fragment>
+          The API is limited to <strong>100 requests per minute</strong> (fixed window) and
+          <strong>1,000 requests per hour</strong> (sliding window), partitioned by API Key.
+          If you exceed the limit you receive HTTP 429 — implement exponential backoff with jitter in your client.
+        </Callout>
+      </li>
+    </ol>
+  </section>
+
+  <section id="sandbox" class="scroll-mt-24 mt-12" data-animate>
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Sandbox — coming soon
+    </h2>
+    <Callout type="info">
+      <Fragment slot="title">Test environment: coming soon</Fragment>
+      BipBip does not have a sandbox environment at this time. The pilot integrates directly against production
+      in coordination with the team. There are no isolated test URLs, API keys, or test orders available yet.
+      When the sandbox becomes available, this section will be updated with the corresponding instructions.
+    </Callout>
+  </section>
+
+  <hr class="my-16 border-neutral-200 dark:border-border-dark" />
+
+  <!-- ════════════════════════════════════════════
+       SECTION 2: HMAC VERIFICATION
+       ════════════════════════════════════════════ -->
+  <section id="hmac" class="scroll-mt-24" data-animate>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">Security</p>
+    <h2 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      HMAC Verification
+    </h2>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      Every webhook BipBip sends includes an HMAC-SHA256 signature in the header
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">X-Bipbip-Signature-256</code>.
+      Verifying this signature is <strong>mandatory</strong> — without it, any malicious actor can send fake orders to your endpoint.
+    </p>
+  </section>
+
+  <section id="hmac-algorithm" class="scroll-mt-24 mt-12" data-animate style="transition-delay: 50ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      The algorithm
+    </h3>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      BipBip signs each request using the following formula:
+    </p>
+    <pre class="mt-4 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={algorithmBlock} /></pre>
+
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">The relevant headers in each request are:</p>
+    <ul class="mt-3 space-y-2 text-sm text-neutral-600 dark:text-neutral-400 list-disc pl-5">
+      <li><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-xs font-mono">X-Bipbip-Timestamp</code> — Unix timestamp in seconds (integer as string)</li>
+      <li><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-xs font-mono">X-Bipbip-Signature-256</code> — the signature in <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">sha256=&lt;hex&gt;</code> format</li>
+      <li><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-xs font-mono">X-Bipbip-Delivery-Id</code> — unique UUID per delivery batch (use for deduplication)</li>
+      <li><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-xs font-mono">X-Bipbip-Event-Type</code> — event type (e.g. <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.created</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.cancelled</code>)</li>
+    </ul>
+
+    <Callout type="info">
+      <Fragment slot="title">Recommended clock skew: maximum 300 seconds</Fragment>
+      Validate that the difference between <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">X-Bipbip-Timestamp</code>
+      and your server's clock does not exceed 300 seconds (5 minutes). This protects against replay attacks where
+      a valid request is captured and resent hours later.
+    </Callout>
+  </section>
+
+  <section id="footguns" class="scroll-mt-24 mt-12" data-animate style="transition-delay: 50ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Common pitfalls (footguns)
+    </h3>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      These three mistakes account for 90% of cases where the signature does not verify. Review them before looking for another problem.
+    </p>
+
+    <Callout type="danger">
+      <Fragment slot="title">Footgun 1: signing the re-serialized JSON instead of the raw body</Fragment>
+      <p>
+        The most frequent mistake: parsing the body with <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">JSON.parse()</code>
+        first and then signing the re-serialized object. Any difference in whitespace, key ordering, or numeric precision produces a different signature than BipBip's.
+      </p>
+      <p class="mt-2"><strong>Solution:</strong> capture the raw bytes of the body <em>before</em> calling any JSON parsing function. Verify the signature. Only then parse.</p>
+    </Callout>
+
+    <Callout type="danger">
+      <Fragment slot="title">Footgun 2: string comparison without timing-safe equality</Fragment>
+      <p>
+        Comparing the computed signature with the received one using <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">===</code>,
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">==</code> or
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">strcmp()</code>
+        introduces a timing oracle vulnerability: an attacker can measure response time to deduce characters of the valid signature one by one.
+      </p>
+      <p class="mt-2"><strong>Solution:</strong> always use a constant-time comparison function:
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">crypto.timingSafeEqual()</code> in Node.js,
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">hmac.compare_digest()</code> in Python,
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">CryptographicOperations.FixedTimeEquals()</code> in C#,
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">hash_equals()</code> in PHP.
+      </p>
+    </Callout>
+
+    <Callout type="danger">
+      <Fragment slot="title">Footgun 3: generating the timestamp locally instead of reading the header</Fragment>
+      <p>
+        The signature includes the timestamp that BipBip wrote in <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">X-Bipbip-Timestamp</code>.
+        If you use <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">Date.now()</code>,
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">time()</code> or
+        <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">DateTime.UtcNow</code>
+        to build the message, the timestamp will differ from BipBip's and the signature will never verify.
+      </p>
+      <p class="mt-2"><strong>Solution:</strong> always read the timestamp from the <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">X-Bipbip-Timestamp</code> header. Do not generate it yourself.</p>
+    </Callout>
+  </section>
+
+  <section id="hmac-samples" class="scroll-mt-24 mt-12" data-animate style="transition-delay: 60ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Code samples
+    </h3>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Pick your language. All samples use only the standard library — no external dependencies required.
+    </p>
+    <div class="mt-6">
+      <TabbedCode tabs={hmacTabs} />
+    </div>
+  </section>
+
+  <hr class="my-16 border-neutral-200 dark:border-border-dark" />
+
+  <!-- ════════════════════════════════════════════
+       SECTION 3: TROUBLESHOOTING
+       ════════════════════════════════════════════ -->
+  <section id="troubleshooting" class="scroll-mt-24" data-animate>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">Support</p>
+    <h2 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Troubleshooting
+    </h2>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      The four most frequently asked questions during integration. If you cannot find the answer here,
+      contact <a href="mailto:integraciones@bipbip.com" class="text-bipbip-red hover:underline">integraciones@bipbip.com</a>.
+    </p>
+  </section>
+
+  <section id="faq-firma" class="scroll-mt-24 mt-10" data-animate style="transition-delay: 50ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      My signature doesn't verify
+    </h3>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>Symptom:</strong> your code computes the HMAC but the calculated signature never matches <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">X-Bipbip-Signature-256</code>.</p>
+    <p class="mt-2 text-neutral-600 dark:text-neutral-400"><strong>Most likely cause:</strong> you are signing the re-serialized JSON instead of the raw body as it arrived over the wire.</p>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>How to fix:</strong></p>
+    <ol class="mt-2 space-y-1.5 text-sm text-neutral-600 dark:text-neutral-400 list-decimal pl-5">
+      <li>Verify that you capture the raw bytes of the body <em>before</em> any call to <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">JSON.parse()</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">json_decode()</code> or equivalent.</li>
+      <li>Confirm that the signed message is exactly <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">"&#123;timestamp&#125;.&#123;rawBody&#125;"</code> — the timestamp comes from the header, not your local clock.</li>
+      <li>Confirm that you are using constant-time comparison (see <a href="#footguns" class="text-bipbip-red hover:underline">Common pitfalls</a>).</li>
+      <li>If the problem persists, log the exact message you are signing and compare it byte by byte.</li>
+    </ol>
+  </section>
+
+  <section id="faq-duplicado" class="scroll-mt-24 mt-10" data-animate style="transition-delay: 80ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      I'm receiving the webhook twice
+    </h3>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>Symptom:</strong> your POS creates the same order twice, or receives two webhooks for the same event.</p>
+    <p class="mt-2 text-neutral-600 dark:text-neutral-400"><strong>Cause:</strong> BipBip delivers webhooks with <em>at-least-once</em> guarantee. If your endpoint takes too long to respond or a network error occurs, BipBip retries the delivery. This is expected behavior, not a bug.</p>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>How to fix:</strong> implement deduplication using the <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">X-Bipbip-Delivery-Id</code> header. This header is a unique UUID per delivery batch — if you have already processed that ID, return HTTP 200 immediately without reprocessing.</p>
+    <pre class="mt-4 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={dedupeExample} /></pre>
+  </section>
+
+  <section id="faq-reintentos" class="scroll-mt-24 mt-10" data-animate style="transition-delay: 100ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      BipBip keeps retrying after my 200
+    </h3>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>Symptom:</strong> your endpoint returns HTTP 200 but BipBip keeps sending the same webhook.</p>
+    <p class="mt-2 text-neutral-600 dark:text-neutral-400"><strong>Cause:</strong> returning HTTP 200 without a valid <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">remoteOrderId</code> is treated as a failed delivery. BipBip needs that value to compose the URL for future cancellation webhooks.</p>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>How to fix:</strong> ensure your response body is valid JSON with a non-null, non-empty <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">remoteOrderId</code>:</p>
+    <pre class="mt-4 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={badAckExamples} /></pre>
+    <Callout type="warning">
+      <Fragment slot="title">Retries exhausted</Fragment>
+      If BipBip exhausts all retries without success, the order is automatically cancelled
+      and an <code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">order.cancelled</code> webhook is sent to your endpoint.
+    </Callout>
+  </section>
+
+  <section id="faq-nada" class="scroll-mt-24 mt-10" data-animate style="transition-delay: 120ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      I'm not receiving any webhooks
+    </h3>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>Symptom:</strong> BipBip confirms it dispatched the webhook but your server received nothing.</p>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400"><strong>Checklist:</strong></p>
+    <ol class="mt-2 space-y-2 text-sm text-neutral-600 dark:text-neutral-400 list-decimal pl-5">
+      <li><strong>Publicly accessible URL:</strong> the registered base URL must be reachable from the internet. Test it with <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">curl -X POST https://your-server.com/v1/order/test</code> from an external network. localhost or private VPN URLs do not work without tunneling (e.g. ngrok).</li>
+      <li><strong>Firewall and allowlist:</strong> if your server has inbound firewall rules, make sure to allow HTTPS traffic from BipBip's IP ranges (ask the team for the exact range).</li>
+      <li><strong>Header inspection:</strong> if the request arrives but is not processed, log all incoming headers. Verify that <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Signature-256</code> and <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Timestamp</code> are present.</li>
+      <li><strong>BackOffice status:</strong> ask the BipBip team to verify whether the delivery is <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">Pending</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">Delivered</code> or <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">Failed</code>.</li>
+    </ol>
+  </section>
+
+  <hr class="my-16 border-neutral-200 dark:border-border-dark" />
+
+  <!-- ════════════════════════════════════════════
+       SECTION 4: GLOSSARY
+       ════════════════════════════════════════════ -->
+  <section id="glossary" class="scroll-mt-24">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">Reference</p>
+    <h2 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Glossary
+    </h2>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      Six terms that appear throughout the integration contract. Use this as a reference when the
+      <a href="/webhook" class="text-bipbip-red hover:underline">Webhook Spec</a> or the
+      <a href="/api" class="text-bipbip-red hover:underline">REST API</a> mention a term you do not recognize.
+    </p>
+
+    <dl class="mt-8 space-y-8">
+      <div>
+        <dt class="text-lg font-semibold text-neutral-900 dark:text-white font-mono">orderKey</dt>
+        <dd class="mt-2 text-neutral-600 dark:text-neutral-400">
+          BipBip's public opaque identifier for an order. Format: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">ord_</code> prefix
+          followed by 16 base62 characters (e.g. <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">ord_4xK9mZqPwRtN2aLb</code>).
+        </dd>
+        <dd class="mt-2 text-sm text-neutral-500 dark:text-neutral-500">
+          <strong>Usage:</strong> the only order identifier BipBip exposes externally. Used as a URL segment in REST endpoints
+          (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/api/v1/orders/&#123;orderKey&#125;/accept</code>). Do not use it internally — use your
+          <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">remoteOrderId</code> for internal correlation.
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-lg font-semibold text-neutral-900 dark:text-white font-mono">remoteOrderId</dt>
+        <dd class="mt-2 text-neutral-600 dark:text-neutral-400">
+          Your POS's own order identifier. You return it in the body of the ACK to the creation webhook (HTTP 200) and BipBip persists it. Required field.
+        </dd>
+        <dd class="mt-2 text-sm text-neutral-500 dark:text-neutral-500">
+          <strong>Usage:</strong> BipBip includes it in the URL of all subsequent cancellation webhooks
+          (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/v1/order/&#123;remoteId&#125;/&#123;remoteOrderId&#125;</code>)
+          so you can correlate the cancellation without looking up by <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">orderKey</code>.
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-lg font-semibold text-neutral-900 dark:text-white font-mono">remoteId</dt>
+        <dd class="mt-2 text-neutral-600 dark:text-neutral-400">
+          Store identifier defined by the merchant (e.g. <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">POS_TGU_001</code>,
+          <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">plaza-pedregal-42</code>). Configured once during onboarding, one per registered store.
+        </dd>
+        <dd class="mt-2 text-sm text-neutral-500 dark:text-neutral-500">
+          <strong>Usage:</strong> appears as <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">&#123;remoteId&#125;</code> in the path of incoming webhooks.
+          Lets you distinguish which store each order comes from when operating multiple stores with the same base endpoint.
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-lg font-semibold text-neutral-900 dark:text-white font-mono">Idempotency-Key</dt>
+        <dd class="mt-2 text-neutral-600 dark:text-neutral-400">
+          Header you send when calling mutation endpoints on the REST API
+          (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">/accept</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">/reject</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">/status</code>).
+          Value: any string unique per logical attempt (recommended: UUID v4).
+        </dd>
+        <dd class="mt-2 text-sm text-neutral-500 dark:text-neutral-500">
+          <strong>Usage:</strong> if you send the same Idempotency-Key with the same body within 24 hours, BipBip returns the cached response without re-executing the mutation — enables safe retries without duplicate side effects. If you use the same key with a different body, you receive HTTP 409 Conflict.
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-lg font-semibold text-neutral-900 dark:text-white font-mono">X-Bipbip-Delivery-Id</dt>
+        <dd class="mt-2 text-neutral-600 dark:text-neutral-400">
+          Header BipBip sends in each webhook dispatch. Value: unique UUID per delivery batch for a given event.
+        </dd>
+        <dd class="mt-2 text-sm text-neutral-500 dark:text-neutral-500">
+          <strong>Usage:</strong> deduplication key on the merchant side. If you receive the same
+          <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Delivery-Id</code> twice (retry), you have already processed that event — return 200 without re-executing business logic.
+          It differs from <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">orderKey</code>: multiple delivery IDs can exist for the same order if retries occurred.
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-lg font-semibold text-neutral-900 dark:text-white">Order states (from the POS)</dt>
+        <dd class="mt-2 text-neutral-600 dark:text-neutral-400">
+          The seven states an order can have in the BipBip system, with the merchant's decision or action at each transition:
+        </dd>
+        <dd class="mt-4">
+          <div class="overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+            <table class="w-full text-sm">
+              <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+                <tr class="text-left">
+                  <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">State</th>
+                  <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Meaning</th>
+                  <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Merchant action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">Pending</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Order received, awaiting POS response</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Respond with <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">remoteOrderId</code>, then call <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">/accept</code> or <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">/reject</code></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">Accepted</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Merchant accepted the order</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Call <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">POST /status</code> with <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">preparing</code> (REST API, camelCase lowercase)</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">Rejected</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Merchant rejected the order (terminal)</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">No further actions</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">Preparing</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Order being prepared</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Call <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">POST /status</code> with <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">ready</code> (REST API, camelCase lowercase)</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">Ready</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Ready for driver pickup</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">No action — BipBip advances when the driver picks up</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">HandedOver</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Handed over to the driver (terminal)</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">No further actions</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">Cancelled</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Cancelled (terminal)</td>
+                  <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Receive <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">order.cancelled</code> webhook</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </dd>
+        <dd class="mt-4 rounded-lg border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
+          <strong>Note: state casing varies by channel.</strong>
+          The webhook uses PascalCase (<code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">Pending</code>,
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">Accepted</code>,
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">HandedOver</code>…) in the
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">previousStatus</code> field of the payload.
+          The REST API uses camelCase lowercase (<code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">pending</code>,
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">accepted</code>,
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">handedOver</code>…) in the
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">status</code> field of the response and in
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">newStatus</code> in the body of
+          <code class="rounded bg-amber-100 dark:bg-amber-500/20 px-1 py-0.5 text-[11px] font-mono">POST /api/v1/Orders/{'{orderKey}'}/status</code>.
+        </dd>
+      </div>
+    </dl>
+  </section>
+</DocsLayout>

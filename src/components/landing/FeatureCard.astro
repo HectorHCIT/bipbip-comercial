@@ -15,7 +15,11 @@ const { title, description } = Astro.props;
     <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-bipbip-red/5 dark:bg-bipbip-red/10 text-bipbip-red transition-transform duration-300 group-hover:scale-110">
       <slot />
     </div>
-    <h3 class="text-base font-semibold text-neutral-900 dark:text-white">{title}</h3>
-    <p class="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{description}</p>
+    <h3 class="text-base font-semibold text-neutral-900 dark:text-white">
+      {title}
+    </h3>
+    <p class="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+      {description}
+    </p>
   </div>
 </div>

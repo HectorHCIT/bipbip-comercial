@@ -1,4 +1,12 @@
 ---
+import { useTranslations } from '../i18n/ui';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+const t = useTranslations(Astro.currentLocale);
+const uiSearch = t.search;
+const locale = Astro.currentLocale ?? 'es';
+// Prefix added to all search result URLs: '' for ES (default), '/en' for EN.
+const localePrefix = getRelativeLocaleUrl(locale, '/').replace(/\/$/, '');
 ---
 
 <div
@@ -19,7 +27,7 @@
         id="palette-input"
         class="w-full bg-transparent py-3.5 text-sm outline-none placeholder-neutral-400 text-neutral-900 dark:text-white"
         type="text"
-        placeholder="Search pages, docs, endpoints..."
+        placeholder={uiSearch.placeholder}
         role="combobox"
         aria-expanded="true"
         aria-controls="palette-results"
@@ -33,44 +41,64 @@
     <div id="palette-results" class="max-h-[320px] overflow-y-auto overscroll-contain" role="listbox" aria-label="Search results"></div>
 
     <div class="flex items-center gap-4 border-t border-neutral-200 dark:border-border-dark px-4 py-2.5 text-[11px] text-neutral-400">
-      <span>&#8593;&#8595; Navigate</span>
-      <span>&#8629; Open</span>
-      <span>esc Close</span>
+      <span>{uiSearch.shortcutNavigate}</span>
+      <span>{uiSearch.shortcutOpen}</span>
+      <span>{uiSearch.shortcutClose}</span>
     </div>
   </div>
 </div>
 
-<script is:inline>
+<script is:inline define:vars={{ uiSearch, localePrefix }}>
 (function () {
+  var GROUP_LABELS = {
+    page: uiSearch.groupPages,
+    docs: uiSearch.groupDocs,
+    endpoint: uiSearch.groupEndpoints,
+    changelog: uiSearch.groupChangelog,
+  };
+  var EMPTY_STATE_LABEL = uiSearch.emptyState;
+
   const SEARCH_INDEX = [
-    { type: "page", title: "Home", url: "/", keywords: "home landing bipbip" },
-    { type: "page", title: "Documentation", url: "/docs", keywords: "docs getting started guide" },
-    { type: "page", title: "API Reference", url: "/api", keywords: "api endpoints reference" },
+    { type: "page", title: "Home", url: "/", keywords: "home landing bipbip merchant" },
+    { type: "page", title: "Guía de integración", url: "/docs", keywords: "docs guia quickstart integration" },
+    { type: "page", title: "Webhook Spec", url: "/webhook", keywords: "webhook outbound order.created order.cancelled" },
+    { type: "page", title: "REST API Reference", url: "/api", keywords: "api rest endpoints reference" },
+    { type: "page", title: "Portal — Autogestión", url: "/portal", keywords: "portal autogestión api keys webhooks tiendas stores merchant" },
     { type: "page", title: "Changelog", url: "/changelog", keywords: "changelog updates versions releases" },
-    { type: "page", title: "Status", url: "/status", keywords: "status uptime health operational" },
-    { type: "docs", title: "Authentication", url: "/docs#authentication", keywords: "auth bearer token api key" },
-    { type: "docs", title: "First Request", url: "/docs#first-request", keywords: "quickstart curl example tutorial" },
-    { type: "docs", title: "Environments", url: "/docs#environments", keywords: "sandbox production base url" },
-    { type: "docs", title: "Rate Limits", url: "/docs#rate-limits", keywords: "throttle 429 limit" },
-    { type: "endpoint", title: "GET /v1/orders", url: "/api#get-v1-orders", keywords: "list orders paginated", method: "GET" },
-    { type: "endpoint", title: "POST /v1/orders", url: "/api#post-v1-orders", keywords: "create order delivery", method: "POST" },
-    { type: "endpoint", title: "GET /v1/orders/:id", url: "/api#get-v1-orders-id", keywords: "retrieve order detail", method: "GET" },
-    { type: "endpoint", title: "PUT /v1/orders/:id/cancel", url: "/api#put-v1-orders-id-cancel", keywords: "cancel order", method: "PUT" },
-    { type: "endpoint", title: "GET /v1/restaurants", url: "/api#get-v1-restaurants", keywords: "list restaurants browse", method: "GET" },
-    { type: "endpoint", title: "GET /v1/restaurants/:id", url: "/api#get-v1-restaurants-id", keywords: "restaurant detail info", method: "GET" },
-    { type: "endpoint", title: "GET /v1/restaurants/:id/menu", url: "/api#get-v1-restaurants-id-menu", keywords: "menu items categories food", method: "GET" },
-    { type: "endpoint", title: "GET /v1/drivers/:id", url: "/api#get-v1-drivers-id", keywords: "driver profile info", method: "GET" },
-    { type: "endpoint", title: "GET /v1/drivers/:id/location", url: "/api#get-v1-drivers-id-location", keywords: "driver gps tracking live", method: "GET" },
-    { type: "endpoint", title: "POST /v1/webhooks", url: "/api#post-v1-webhooks", keywords: "create webhook subscribe events", method: "POST" },
-    { type: "endpoint", title: "GET /v1/webhooks", url: "/api#get-v1-webhooks", keywords: "list webhooks subscriptions", method: "GET" },
-    { type: "endpoint", title: "DELETE /v1/webhooks/:id", url: "/api#delete-v1-webhooks-id", keywords: "remove webhook unsubscribe", method: "DELETE" },
-    { type: "changelog", title: "v1.2.0 \u2014 Real-time tracking", url: "/changelog", keywords: "websocket batch driver tracking" },
-    { type: "changelog", title: "v1.1.0 \u2014 Webhook management", url: "/changelog", keywords: "webhook menu fixes" },
-    { type: "changelog", title: "v1.0.0 \u2014 Initial release", url: "/changelog", keywords: "launch first version orders restaurants" },
+    { type: "docs", title: "Quickstart", url: "/docs#quickstart", keywords: "primeros pasos quickstart intro" },
+    { type: "docs", title: "Precondiciones", url: "/docs#preconditions", keywords: "hmac secret api key remoteid base url onboarding" },
+    { type: "docs", title: "Los 4 pasos", url: "/docs#steps", keywords: "pasos webhook verify ack accept" },
+    { type: "docs", title: "Sandbox", url: "/docs#sandbox", keywords: "sandbox ambiente pruebas produccion" },
+    { type: "docs", title: "Verificación HMAC", url: "/docs#hmac", keywords: "hmac sha256 signature firma seguridad" },
+    { type: "docs", title: "Algoritmo HMAC", url: "/docs#hmac-algorithm", keywords: "algorithm algoritmo timestamp rawbody sha256" },
+    { type: "docs", title: "Errores comunes (footguns)", url: "/docs#footguns", keywords: "footguns errores timing raw body json parse" },
+    { type: "docs", title: "Code samples HMAC", url: "/docs#hmac-samples", keywords: "node python csharp php samples" },
+    { type: "docs", title: "Firma no verifica", url: "/docs#faq-firma", keywords: "hmac no verifica troubleshooting signature" },
+    { type: "docs", title: "Webhook duplicado", url: "/docs#faq-duplicado", keywords: "duplicado dedupe delivery-id at-least-once" },
+    { type: "docs", title: "BipBip sigue reintentando", url: "/docs#faq-reintentos", keywords: "reintentos retry remoteorderid 200" },
+    { type: "docs", title: "No recibo webhooks", url: "/docs#faq-nada", keywords: "firewall url publica ngrok" },
+    { type: "docs", title: "Glosario", url: "/docs#glossary", keywords: "glosario orderkey remoteorderid remoteid idempotency delivery-id estados" },
+    { type: "endpoint", title: "POST /v1/order/:remoteId", url: "/webhook#post-v1-order-remoteid", keywords: "order created webhook receive raw body", method: "POST" },
+    { type: "endpoint", title: "POST /v1/order/:remoteId/:remoteOrderId", url: "/webhook#post-v1-order-remoteid-remoteorderid", keywords: "cancellation cancel webhook", method: "POST" },
+    { type: "endpoint", title: "POST /api/v1/orders/:orderKey/accept", url: "/api#post-api-v1-orders-orderkey-accept", keywords: "accept orden aceptar", method: "POST" },
+    { type: "endpoint", title: "POST /api/v1/orders/:orderKey/reject", url: "/api#post-api-v1-orders-orderkey-reject", keywords: "reject rechazar out of stock", method: "POST" },
+    { type: "endpoint", title: "POST /api/v1/orders/:orderKey/status", url: "/api#post-api-v1-orders-orderkey-status", keywords: "status preparing ready transicion estado", method: "POST" },
+    { type: "endpoint", title: "GET /api/v1/Orders/:orderKey", url: "/api#get-api-v1-orders-orderkey", keywords: "get orden consulta reconciliar", method: "GET" },
+    { type: "endpoint", title: "GET /api/v1/Orders", url: "/api#get-api-v1-orders", keywords: "listar ordenes cursor paginacion", method: "GET" },
+    { type: "endpoint", title: "GET /portal/me", url: "/portal#get-portal-me", keywords: "portal identity probe claims access token", method: "GET" },
+    { type: "endpoint", title: "GET /portal/clients/:clientId/api-keys", url: "/portal#get-portal-clients-clientid-api-keys", keywords: "portal api keys listar", method: "GET" },
+    { type: "endpoint", title: "POST /portal/clients/:clientId/api-keys", url: "/portal#post-portal-clients-clientid-api-keys", keywords: "portal api key crear create", method: "POST" },
+    { type: "endpoint", title: "POST /portal/clients/:clientId/api-keys/:keyId/rotate", url: "/portal#post-portal-clients-clientid-api-keys-keyid-rotate", keywords: "portal api key rotar rotate", method: "POST" },
+    { type: "endpoint", title: "DELETE /portal/clients/:clientId/api-keys/:keyId", url: "/portal#delete-portal-clients-clientid-api-keys-keyid", keywords: "portal api key revocar delete", method: "DELETE" },
+    { type: "endpoint", title: "GET /portal/clients/:clientId/stores", url: "/portal#get-portal-clients-clientid-stores", keywords: "portal tiendas stores listar", method: "GET" },
+    { type: "endpoint", title: "PATCH /portal/clients/:clientId/stores/:storeId", url: "/portal#patch-portal-clients-clientid-stores-storeid", keywords: "portal tienda store remoteid autoaccept", method: "PATCH" },
+    { type: "endpoint", title: "GET /portal/clients/:clientId/webhooks", url: "/portal#get-portal-clients-clientid-webhooks", keywords: "portal webhooks endpoints listar", method: "GET" },
+    { type: "endpoint", title: "POST /portal/clients/:clientId/webhooks", url: "/portal#post-portal-clients-clientid-webhooks", keywords: "portal webhook endpoint crear create secret hmac", method: "POST" },
+    { type: "endpoint", title: "POST /portal/clients/:clientId/webhooks/:endpointId/secret/rotate", url: "/portal#post-portal-clients-clientid-webhooks-endpointid-secret-rotate", keywords: "portal webhook secret rotar rotate hmac dual window", method: "POST" },
+    { type: "changelog", title: "v1.0.0 \u2014 Merchant Integration API", url: "/changelog", keywords: "launch piloto v1 webhook rest" },
   ];
 
   var GROUP_ORDER = ["page", "docs", "endpoint", "changelog"];
-  var GROUP_LABELS = { page: "Pages", docs: "Documentation", endpoint: "API Endpoints", changelog: "Changelog" };
 
   var METHOD_COLORS = {
     GET: "bg-green-500/10 text-green-600 dark:text-green-400",
@@ -86,24 +114,31 @@
     changelog: '<svg class="h-4 w-4 text-neutral-400 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>',
   };
 
-  var palette = document.getElementById("command-palette");
-  var backdrop = document.getElementById("palette-backdrop");
-  var input = document.getElementById("palette-input");
-  var results = document.getElementById("palette-results");
+  // DOM refs are looked up lazily on each call — after a view transition
+  // the #command-palette element is replaced so stored refs go stale.
+  function getEl(id) { return document.getElementById(id); }
+  function getPalette()  { return getEl("command-palette"); }
+  function getBackdrop() { return getEl("palette-backdrop"); }
+  function getInput()    { return getEl("palette-input"); }
+  function getResults()  { return getEl("palette-results"); }
+
   var activeIndex = -1;
   var currentItems = [];
 
   function open() {
+    var palette = getPalette(); var input = getInput();
+    if (!palette) return;
     palette.classList.remove("hidden");
-    input.focus();
+    if (input) input.focus();
     document.body.classList.add("overflow-hidden");
     render("");
   }
 
   function close() {
-    palette.classList.add("hidden");
-    input.value = "";
-    results.innerHTML = "";
+    var palette = getPalette(); var input = getInput(); var results = getResults();
+    if (palette) palette.classList.add("hidden");
+    if (input) input.value = "";
+    if (results) results.innerHTML = "";
     activeIndex = -1;
     currentItems = [];
     document.body.classList.remove("overflow-hidden");
@@ -134,12 +169,14 @@
   }
 
   function render(query) {
+    var results = getResults();
+    if (!results) return;
     var items = filter(query);
     currentItems = items;
     activeIndex = -1;
 
     if (items.length === 0) {
-      results.innerHTML = '<div class="px-6 py-12 text-center"><p class="text-sm text-neutral-400">No results for "<strong>' + escapeHtml(query) + '</strong>"</p></div>';
+      results.innerHTML = '<div class="px-6 py-12 text-center"><p class="text-sm text-neutral-400">' + EMPTY_STATE_LABEL + ' "<strong>' + escapeHtml(query) + '</strong>"</p></div>';
       return;
     }
 
@@ -163,7 +200,10 @@
           extra = '<span class="inline-flex min-w-[2.5rem] justify-center rounded px-1 py-0.5 text-[9px] font-bold font-mono ' + color + '">' + item.method + "</span>";
         }
 
-        html += '<a href="' + escapeHtml(item.url) + '" data-palette-item data-index="' + globalIdx + '" role="option" aria-selected="false" class="flex items-center gap-3 mx-2 px-3 py-2 rounded-lg text-sm cursor-pointer text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-surface-dark-elevated transition-colors">';
+        // Localize the URL: item.url is locale-agnostic ("/docs"), we prepend the current locale prefix ("" for ES, "/en" for EN).
+        // For hash-only URLs or external, keep as-is.
+        var localizedUrl = item.url.startsWith('/') ? (localePrefix + item.url) : item.url;
+        html += '<a href="' + escapeHtml(localizedUrl) + '" data-palette-item data-index="' + globalIdx + '" role="option" aria-selected="false" class="flex items-center gap-3 mx-2 px-3 py-2 rounded-lg text-sm cursor-pointer text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-surface-dark-elevated transition-colors">';
         html += ICONS[item.type] || "";
         html += extra;
         html += "<span>" + escapeHtml(item.title) + "</span>";
@@ -177,6 +217,8 @@
   }
 
   function updateActive() {
+    var results = getResults();
+    if (!results) return;
     var allItems = results.querySelectorAll("[data-palette-item]");
     for (var i = 0; i < allItems.length; i++) {
       var el = allItems[i];
@@ -191,47 +233,63 @@
     }
   }
 
-  document.addEventListener("keydown", function (e) {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-      e.preventDefault();
-      if (palette.classList.contains("hidden")) {
-        open();
-      } else {
+  // Document-level keydown — registered ONCE (document persists across navigations)
+  if (!document.__paletteKeydownBound) {
+    document.__paletteKeydownBound = true;
+    document.addEventListener("keydown", function (e) {
+      var palette = getPalette();
+      if (!palette) return;
+
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (palette.classList.contains("hidden")) open();
+        else close();
+        return;
+      }
+
+      if (palette.classList.contains("hidden")) return;
+
+      var results = getResults();
+      if (!results) return;
+      var total = results.querySelectorAll("[data-palette-item]").length;
+
+      if (e.key === "Escape") {
+        e.preventDefault();
         close();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (total === 0) return;
+        activeIndex = activeIndex < total - 1 ? activeIndex + 1 : 0;
+        updateActive();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (total === 0) return;
+        activeIndex = activeIndex > 0 ? activeIndex - 1 : total - 1;
+        updateActive();
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (activeIndex >= 0) {
+          var active = results.querySelector('[data-index="' + activeIndex + '"]');
+          if (active) window.location.href = active.getAttribute("href");
+        }
       }
-      return;
-    }
+    });
+  }
 
-    if (palette.classList.contains("hidden")) return;
+  // Element-level listeners — re-attach on every page load because the palette
+  // DOM node is replaced during Astro view transitions.
+  function bindElementListeners() {
+    var palette = getPalette();
+    var backdrop = getBackdrop();
+    var input = getInput();
+    if (!palette || palette.dataset.bound === '1') return;
+    palette.dataset.bound = '1';
 
-    var total = results.querySelectorAll("[data-palette-item]").length;
+    if (backdrop) backdrop.addEventListener("click", close);
+    if (input) input.addEventListener("input", function () { render(input.value.trim()); });
+  }
 
-    if (e.key === "Escape") {
-      e.preventDefault();
-      close();
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (total === 0) return;
-      activeIndex = activeIndex < total - 1 ? activeIndex + 1 : 0;
-      updateActive();
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (total === 0) return;
-      activeIndex = activeIndex > 0 ? activeIndex - 1 : total - 1;
-      updateActive();
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (activeIndex >= 0) {
-        var active = results.querySelector('[data-index="' + activeIndex + '"]');
-        if (active) window.location.href = active.getAttribute("href");
-      }
-    }
-  });
-
-  backdrop.addEventListener("click", close);
-
-  input.addEventListener("input", function () {
-    render(input.value.trim());
-  });
+  bindElementListeners();
+  document.addEventListener('astro:page-load', bindElementListeners);
 })();
 </script>

@@ -4,24 +4,29 @@ import { ClientRouter } from 'astro:transitions';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import CommandPalette from '../components/CommandPalette.astro';
+import FloatingIcons from '../components/FloatingIcons.astro';
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  floatingIcons?: boolean;
+  floatingDensity?: 'sparse' | 'normal' | 'dense';
 }
 
 const {
   title = 'BipBip Developer Portal',
   description = 'Build on the BipBip platform. APIs for orders, restaurants, drivers, and real-time tracking.',
   ogImage = '/v2.svg',
+  floatingIcons = true,
+  floatingDensity = 'sparse',
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://developers.bipbip.hn');
 ---
 
 <!doctype html>
-<html lang="es" class="dark">
+<html lang={Astro.currentLocale ?? 'es'} class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -48,10 +53,25 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://develope
     <title>{title}</title>
     <ClientRouter />
     <script is:inline>
-      const theme = localStorage.getItem('theme');
-      if (theme === 'light') {
-        document.documentElement.classList.remove('dark');
-      }
+      // Apply theme from localStorage on first paint (avoids flash).
+      (function applyTheme() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+
+      // Re-apply after every Astro view transition — the <html> class resets on nav.
+      document.addEventListener('astro:after-swap', () => {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          document.documentElement.classList.add('dark');
+        }
+      });
     </script>
   </head>
   <body class="min-h-screen bg-surface-light dark:bg-surface-dark text-neutral-800 dark:text-neutral-200 font-sans antialiased transition-colors duration-300">
@@ -59,7 +79,12 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://develope
     <div id="scroll-progress" class="fixed top-0 left-0 z-[60] h-[3px] bg-gradient-to-r from-bipbip-red to-bipbip-orange" style="width: 0%; transition: width 50ms linear"></div>
 
     <Header />
-    <main>
+    <main class="relative" transition:name="page-main" transition:animate="none">
+      {floatingIcons && (
+        <div class="pointer-events-none fixed inset-0 top-16 overflow-hidden -z-10" aria-hidden="true">
+          <FloatingIcons density={floatingDensity} />
+        </div>
+      )}
       <slot />
     </main>
     <Footer />

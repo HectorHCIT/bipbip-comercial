@@ -1,0 +1,358 @@
+---
+import DocsLayout from '../../components/docs/DocsLayout.astro';
+import SidebarGroup from '../../components/docs/SidebarGroup.astro';
+import SidebarLink from '../../components/docs/SidebarLink.astro';
+import EndpointCard from '../../components/docs/EndpointCard.astro';
+import Callout from '../../components/docs/Callout.astro';
+
+const orderPayload = `{
+  <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"eventType"</span>: <span class="text-green-700 dark:text-green-400">"order.created"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"occurredAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:42:00Z"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"correlationId"</span>: <span class="text-green-700 dark:text-green-400">"5f8e4b2a-3c1d-4f9e-b8a7-2d6e1c4b5f9a"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"customer"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"fullName"</span>: <span class="text-green-700 dark:text-green-400">"Ana Martínez"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"phone"</span>: <span class="text-green-700 dark:text-green-400">"+50499887766"</span>
+  },
+  <span class="text-blue-600 dark:text-blue-400">"delivery"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"address"</span>: <span class="text-green-700 dark:text-green-400">"Col. Lomas del Guijarro, calle 2, casa 15, Tegucigalpa"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"latitude"</span>: <span class="text-amber-600 dark:text-amber-400">14.0818</span>,
+    <span class="text-blue-600 dark:text-blue-400">"longitude"</span>: <span class="text-amber-600 dark:text-amber-400">-87.2068</span>
+  },
+  <span class="text-blue-600 dark:text-blue-400">"totals"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"total"</span>: <span class="text-amber-600 dark:text-amber-400">285.00</span>,
+    <span class="text-blue-600 dark:text-blue-400">"subTotal"</span>: <span class="text-amber-600 dark:text-amber-400">250.00</span>,
+    <span class="text-blue-600 dark:text-blue-400">"taxes"</span>: <span class="text-amber-600 dark:text-amber-400">35.00</span>,
+    <span class="text-blue-600 dark:text-blue-400">"deliveryCharge"</span>: <span class="text-amber-600 dark:text-amber-400">0.00</span>
+  },
+  <span class="text-blue-600 dark:text-blue-400">"items"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"productCode"</span>: <span class="text-green-700 dark:text-green-400">"BM-001"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Big Mac Combo"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"quantity"</span>: <span class="text-amber-600 dark:text-amber-400">2</span>,
+      <span class="text-blue-600 dark:text-blue-400">"price"</span>: <span class="text-amber-600 dark:text-amber-400">120.00</span>,
+      <span class="text-blue-600 dark:text-blue-400">"tax"</span>: <span class="text-amber-600 dark:text-amber-400">18.00</span>,
+      <span class="text-blue-600 dark:text-blue-400">"comments"</span>: <span class="text-green-700 dark:text-green-400">"Sin cebolla"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"imageUrl"</span>: <span class="text-green-700 dark:text-green-400">"https://cdn.bipbip.com/products/bm.png"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"modifiers"</span>: [
+        { <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"Extra queso"</span>, <span class="text-blue-600 dark:text-blue-400">"price"</span>: <span class="text-amber-600 dark:text-amber-400">15.00</span>, <span class="text-blue-600 dark:text-blue-400">"quantity"</span>: <span class="text-amber-600 dark:text-amber-400">1</span> }
+      ]
+    }
+  ],
+  <span class="text-blue-600 dark:text-blue-400">"comment"</span>: <span class="text-green-700 dark:text-green-400">"Dejar en portería, favor llamar al llegar"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"dateDelivery"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T16:15:00Z"</span>
+}`;
+
+const cancellationPayload = `{
+  <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"cancelReasonId"</span>: <span class="text-amber-600 dark:text-amber-400">3</span>,
+  <span class="text-blue-600 dark:text-blue-400">"previousStatus"</span>: <span class="text-green-700 dark:text-green-400">"Pending"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"origin"</span>: <span class="text-green-700 dark:text-green-400">"Customer"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"occurredAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:52:00Z"</span>
+}`;
+
+const ackPayload = `{
+  <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>
+}`;
+---
+
+<DocsLayout title="Webhook Spec">
+  <Fragment slot="sidebar">
+    <SidebarGroup title="First">
+      <SidebarLink href="#overview">Introduction</SidebarLink>
+      <SidebarLink href="#transport">Transport contract</SidebarLink>
+      <SidebarLink href="#headers">Signed headers</SidebarLink>
+      <SidebarLink href="#retries">Retry policy</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Endpoints">
+      <SidebarLink href="#post-v1-order-remoteid" method="POST">Receive order</SidebarLink>
+      <SidebarLink href="#post-v1-order-remoteid-remoteorderid" method="POST">Receive cancellation</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Schemas">
+      <SidebarLink href="#schema-order">Order</SidebarLink>
+      <SidebarLink href="#schema-cancellation">OrderCancellation</SidebarLink>
+      <SidebarLink href="#schema-ack">OrderAck</SidebarLink>
+    </SidebarGroup>
+  </Fragment>
+
+  <!-- Header -->
+  <section id="overview" class="scroll-mt-24" data-animate>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">Outbound · You implement it</p>
+    <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Webhook Spec
+    </h1>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      This document describes the <strong>outbound contract</strong> BipBip uses to deliver new orders to your POS.
+      It is the endpoint that <strong>your system must implement and expose</strong> so BipBip can call it.
+    </p>
+
+    <Callout type="info">
+      <Fragment slot="title">This is the counterpart to the REST API</Fragment>
+      BipBip → your POS = webhook (this page). Your POS → BipBip = <a href="/en/api" class="font-medium underline">REST API</a>.
+      The <a href="/en/docs" class="font-medium underline">integration guide</a> explains how they fit together.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Transport -->
+  <section id="transport" class="scroll-mt-24" data-animate style="transition-delay: 50ms">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Transport contract
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      <strong>Fixed</strong> transport contract — these parameters are non-negotiable and are not customized per merchant.
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Parameter</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Value</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Creation path</td>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">POST &#123;yourBaseUrl&#125;/v1/order/&#123;remoteId&#125;</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Cancellation path</td>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">POST &#123;yourBaseUrl&#125;/v1/order/&#123;remoteId&#125;/&#123;remoteOrderId&#125;</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Versioning</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">In the path (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/v1/</code>) — future versions can run in parallel</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Body</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">JSON — <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">Order</code> and <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">OrderCancellation</code> schemas</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Timeout</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">30 seconds per attempt</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">ACK (creation)</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">HTTP 200 with <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">&#123; remoteOrderId &#125;</code> — required</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">ACK (cancellation)</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">HTTP 200 — body ignored</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Headers -->
+  <section id="headers" class="scroll-mt-24" data-animate style="transition-delay: 50ms">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Signed headers
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      BipBip signs each request with HMAC-SHA256 over <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">&#123;timestamp&#125;.&#123;rawBody&#125;</code>
+      using the shared secret provided during onboarding. See the <a href="/en/docs#hmac" class="text-bipbip-red hover:underline">HMAC verification guide</a> for the full algorithm and code samples.
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Header</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Description</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">X-Bipbip-Signature-256</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">HMAC-SHA256 in <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">sha256=&lt;hex&gt;</code> format (lowercase)</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">X-Bipbip-Timestamp</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Unix epoch in seconds. Reject if skew exceeds 300s.</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">X-Bipbip-Event-Type</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400"><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.created</code> or <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.cancelled</code></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-bipbip-red dark:text-bipbip-yellow">X-Bipbip-Delivery-Id</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Unique UUID per dispatch. Use for deduplication.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Retries -->
+  <section id="retries" class="scroll-mt-24" data-animate style="transition-delay: 50ms">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Retry policy
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      BipBip implements <strong>at-least-once delivery</strong> with exponential backoff.
+    </p>
+
+    <ul class="mt-4 space-y-2 text-sm text-neutral-600 dark:text-neutral-400 list-disc pl-5">
+      <li><strong>5xx or network error</strong> → BipBip retries (up to <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">maxRetries</code>, default 5)</li>
+      <li><strong>4xx</strong> → terminal, BipBip does <strong>not</strong> retry</li>
+      <li><strong>Timeout &gt; 30s</strong> → treats the attempt as a failure and retries</li>
+      <li><strong>HTTP 200 without remoteOrderId</strong> → treats as failure and retries</li>
+      <li>All retries carry the same <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Delivery-Id</code> — deduplicate using that UUID</li>
+    </ul>
+
+    <Callout type="warning">
+      <Fragment slot="title">If retries are exhausted</Fragment>
+      If BipBip exhausts all retries without success, the order is automatically cancelled and an
+      <code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">order.cancelled</code> webhook is sent (if the creation webhook ever reached your POS).
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Endpoints -->
+  <section id="endpoints" class="scroll-mt-24" data-animate style="transition-delay: 50ms">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Endpoints
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Your POS must expose these two endpoints. BipBip calls them with the signed headers described above.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="POST"
+        path="/v1/order/{remoteId}"
+        description="Delivery of a new order. Verify the HMAC signature, deduplicate with X-Bipbip-Delivery-Id, persist the order in your POS, and respond HTTP 200 with { remoteOrderId } in the body. The remoteOrderId value is required — BipBip uses it to compose the cancellation URL."
+        responseCode={ackPayload}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/v1/order/{remoteId}/{remoteOrderId}"
+        description="Cancellation of a previously delivered order. The URL includes your remoteOrderId so you can correlate without parsing the body. Verify HMAC, cancel in your POS, and respond HTTP 200 (body ignored). Only sent if the creation webhook was delivered successfully."
+      />
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Schemas -->
+  <section id="schemas" class="scroll-mt-24" data-animate>
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Schemas
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      The JSON bodies BipBip sends and the ACK it expects in return.
+    </p>
+  </section>
+
+  <section id="schema-order" class="scroll-mt-24 mt-10" data-animate style="transition-delay: 50ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+      Order
+    </h3>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+      Payload sent by BipBip on <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">POST /v1/order/&#123;remoteId&#125;</code>
+      (eventType <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.created</code>).
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Field</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Type</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Description</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr><td class="px-4 py-3 font-mono text-xs">orderKey</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">string</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Opaque BipBip identifier (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">ord_</code> + 16 base62)</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">eventType</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">enum</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Always <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">order.created</code></td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">occurredAt</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">ISO-8601</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">UTC timestamp of the event</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">correlationId</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">uuid</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Trace ID for support and logging</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">customer</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">object</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400"><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">fullName</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">phone</code></td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">delivery</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">object</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400"><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">address</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">latitude?</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">longitude?</code></td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">totals</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">object</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400"><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">total</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">subTotal</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">taxes</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">deliveryCharge</code></td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">items[]</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">array</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400"><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">productCode</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">name</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">quantity</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">price</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">tax</code>, <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">modifiers[]</code></td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">comment</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">string?</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Customer note (may be null)</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">dateDelivery</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">ISO-8601</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Target delivery time</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details class="mt-4 group">
+      <summary class="cursor-pointer text-sm font-semibold text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 select-none">
+        Full example
+        <svg class="inline h-3.5 w-3.5 ml-1 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </summary>
+      <pre class="mt-3 rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated overflow-x-auto p-4 text-[12px] leading-relaxed font-mono"><code set:html={orderPayload} /></pre>
+    </details>
+  </section>
+
+  <section id="schema-cancellation" class="scroll-mt-24 mt-12" data-animate style="transition-delay: 80ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+      OrderCancellation
+    </h3>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+      Payload sent by BipBip on <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">POST /v1/order/&#123;remoteId&#125;/&#123;remoteOrderId&#125;</code>
+      when a customer cancels an order.
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Field</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Type</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Description</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr><td class="px-4 py-3 font-mono text-xs">orderKey</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">string</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">BipBip order identifier</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">remoteOrderId</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">string?</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">The value you returned in the original ACK (also present in the path)</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">cancelReasonId</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">integer?</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Cancellation reason (informational, may be null)</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">previousStatus</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">enum</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400"><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Pending</code> / <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Accepted</code> / <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Preparing</code> / <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Ready</code> / <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Unknown</code></td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">origin</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">enum</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Who cancelled — <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Customer</code></td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">occurredAt</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">ISO-8601</td><td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">UTC timestamp of the cancellation</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details class="mt-4 group">
+      <summary class="cursor-pointer text-sm font-semibold text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 select-none">
+        Example
+        <svg class="inline h-3.5 w-3.5 ml-1 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </summary>
+      <pre class="mt-3 rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated overflow-x-auto p-4 text-[12px] leading-relaxed font-mono"><code set:html={cancellationPayload} /></pre>
+    </details>
+  </section>
+
+  <section id="schema-ack" class="scroll-mt-24 mt-12" data-animate style="transition-delay: 100ms">
+    <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+      OrderAck
+    </h3>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+      Your response to the creation webhook. Required field: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">remoteOrderId</code>.
+    </p>
+    <pre class="mt-4 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={ackPayload} /></pre>
+
+    <Callout type="danger">
+      <Fragment slot="title">Without remoteOrderId, BipBip retries</Fragment>
+      Responses with <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">remoteOrderId</code> null, empty, or absent
+      are treated as a <strong>failed delivery</strong>. BipBip will retry until <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">maxRetries</code> is exhausted.
+    </Callout>
+  </section>
+</DocsLayout>

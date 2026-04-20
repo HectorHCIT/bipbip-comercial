@@ -1,0 +1,409 @@
+---
+import DocsLayout from '../../components/docs/DocsLayout.astro';
+import SidebarGroup from '../../components/docs/SidebarGroup.astro';
+import SidebarLink from '../../components/docs/SidebarLink.astro';
+import EndpointCard from '../../components/docs/EndpointCard.astro';
+import Callout from '../../components/docs/Callout.astro';
+
+// ── Response bodies ─────────────────────────────────────────────────────────
+
+const meResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"userId"</span>: <span class="text-green-700 dark:text-green-400">"usr_abc123"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"email"</span>: <span class="text-green-700 dark:text-green-400">"admin@tucomercio.com"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"bleIds"</span>: [<span class="text-amber-600 dark:text-amber-400">12</span>, <span class="text-amber-600 dark:text-amber-400">15</span>]
+  }
+}`;
+
+const listApiKeysResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-amber-600 dark:text-amber-400">7</span>,
+      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"prod"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"prefix"</span>: <span class="text-green-700 dark:text-green-400">"bk_live_a1b2"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"createdAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-01-15T10:00:00Z"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"lastUsedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-20T08:30:00Z"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"revokedAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
+    }
+  ]
+}`;
+
+const createApiKeyResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"API Key created"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-amber-600 dark:text-amber-400">8</span>,
+    <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"ci-staging"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"prefix"</span>: <span class="text-green-700 dark:text-green-400">"bk_live_c3d4"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"plainKey"</span>: <span class="text-green-700 dark:text-green-400">"bk_live_c3d4e5f6g7h8i9j0k1l2m3n4o5p6"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"createdAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-20T09:00:00Z"</span>
+  }
+}`;
+
+const rotateApiKeyResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"API Key rotated"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-amber-600 dark:text-amber-400">9</span>,
+    <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"prod"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"prefix"</span>: <span class="text-green-700 dark:text-green-400">"bk_live_x1y2"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"plainKey"</span>: <span class="text-green-700 dark:text-green-400">"bk_live_x1y2z3a4b5c6d7e8f9g0h1i2j3k4"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"createdAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-20T09:05:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"revokedKeyId"</span>: <span class="text-amber-600 dark:text-amber-400">7</span>
+  }
+}`;
+
+const listStoresResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"storeId"</span>: <span class="text-amber-600 dark:text-amber-400">42</span>,
+      <span class="text-blue-600 dark:text-blue-400">"brandId"</span>: <span class="text-amber-600 dark:text-amber-400">7</span>,
+      <span class="text-blue-600 dark:text-blue-400">"remoteId"</span>: <span class="text-green-700 dark:text-green-400">"POS_TGU_001"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"autoAccept"</span>: <span class="text-amber-600 dark:text-amber-400">false</span>,
+      <span class="text-blue-600 dark:text-blue-400">"assignedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-01-10T00:00:00Z"</span>
+    }
+  ]
+}`;
+
+const updateStoreResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Store config updated"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"storeId"</span>: <span class="text-amber-600 dark:text-amber-400">42</span>,
+    <span class="text-blue-600 dark:text-blue-400">"brandId"</span>: <span class="text-amber-600 dark:text-amber-400">7</span>,
+    <span class="text-blue-600 dark:text-blue-400">"remoteId"</span>: <span class="text-green-700 dark:text-green-400">"POS_TGU_002"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"autoAccept"</span>: <span class="text-amber-600 dark:text-amber-400">true</span>,
+    <span class="text-blue-600 dark:text-blue-400">"assignedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-01-10T00:00:00Z"</span>
+  }
+}`;
+
+const listWebhooksResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: [
+    {
+      <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-amber-600 dark:text-amber-400">3</span>,
+      <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"POS principal"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"url"</span>: <span class="text-green-700 dark:text-green-400">"https://pos.tucomercio.com"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"subscribedEvents"</span>: [<span class="text-green-700 dark:text-green-400">"order.created"</span>, <span class="text-green-700 dark:text-green-400">"order.cancelled"</span>],
+      <span class="text-blue-600 dark:text-blue-400">"maxRetries"</span>: <span class="text-amber-600 dark:text-amber-400">3</span>,
+      <span class="text-blue-600 dark:text-blue-400">"timeoutSeconds"</span>: <span class="text-amber-600 dark:text-amber-400">30</span>,
+      <span class="text-blue-600 dark:text-blue-400">"acceptanceTimeoutMinutes"</span>: <span class="text-amber-600 dark:text-amber-400">5</span>,
+      <span class="text-blue-600 dark:text-blue-400">"enabled"</span>: <span class="text-amber-600 dark:text-amber-400">true</span>,
+      <span class="text-blue-600 dark:text-blue-400">"circuitState"</span>: <span class="text-green-700 dark:text-green-400">"Closed"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"createdAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-01-15T10:00:00Z"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"updatedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-01T12:00:00Z"</span>,
+      <span class="text-blue-600 dark:text-blue-400">"secretRotatedAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
+    }
+  ]
+}`;
+
+const createWebhookResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Webhook endpoint created"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-amber-600 dark:text-amber-400">4</span>,
+    <span class="text-blue-600 dark:text-blue-400">"name"</span>: <span class="text-green-700 dark:text-green-400">"POS secundario"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"url"</span>: <span class="text-green-700 dark:text-green-400">"https://pos2.tucomercio.com"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"subscribedEvents"</span>: [<span class="text-green-700 dark:text-green-400">"order.created"</span>],
+    <span class="text-blue-600 dark:text-blue-400">"maxRetries"</span>: <span class="text-amber-600 dark:text-amber-400">3</span>,
+    <span class="text-blue-600 dark:text-blue-400">"timeoutSeconds"</span>: <span class="text-amber-600 dark:text-amber-400">30</span>,
+    <span class="text-blue-600 dark:text-blue-400">"acceptanceTimeoutMinutes"</span>: <span class="text-amber-600 dark:text-amber-400">5</span>,
+    <span class="text-blue-600 dark:text-blue-400">"enabled"</span>: <span class="text-amber-600 dark:text-amber-400">true</span>,
+    <span class="text-blue-600 dark:text-blue-400">"circuitState"</span>: <span class="text-green-700 dark:text-green-400">"Closed"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"createdAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-20T09:30:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"updatedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-20T09:30:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"secretRotatedAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"plainSecret"</span>: <span class="text-green-700 dark:text-green-400">"whsec_xK9mZqPwRtN2aLb3cD4eF5gH6iJ7kL8"</span>
+  }
+}`;
+
+const rotateSecretResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Secret rotated"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"id"</span>: <span class="text-amber-600 dark:text-amber-400">3</span>,
+    <span class="text-blue-600 dark:text-blue-400">"plainSecret"</span>: <span class="text-green-700 dark:text-green-400">"whsec_newSecretValueHereGuardaNow"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"rotatedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-20T10:00:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"previousValidUntil"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-21T10:00:00Z"</span>
+  }
+}`;
+---
+
+<DocsLayout title="Portal — Self-service">
+  <Fragment slot="sidebar">
+    <SidebarGroup title="First">
+      <SidebarLink href="#overview">Introduction</SidebarLink>
+      <SidebarLink href="#auth">Authentication</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Identity">
+      <SidebarLink href="#get-portal-me" method="GET">Probe</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="API Keys">
+      <SidebarLink href="#get-portal-clients-clientid-api-keys" method="GET">List</SidebarLink>
+      <SidebarLink href="#post-portal-clients-clientid-api-keys" method="POST">Create</SidebarLink>
+      <SidebarLink href="#post-portal-clients-clientid-api-keys-keyid-rotate" method="POST">Rotate</SidebarLink>
+      <SidebarLink href="#delete-portal-clients-clientid-api-keys-keyid" method="DELETE">Revoke</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Stores">
+      <SidebarLink href="#get-portal-clients-clientid-stores" method="GET">List</SidebarLink>
+      <SidebarLink href="#patch-portal-clients-clientid-stores-storeid" method="PATCH">Update</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Webhooks">
+      <SidebarLink href="#get-portal-clients-clientid-webhooks" method="GET">List</SidebarLink>
+      <SidebarLink href="#post-portal-clients-clientid-webhooks" method="POST">Create</SidebarLink>
+      <SidebarLink href="#put-portal-clients-clientid-webhooks-endpointid" method="PUT">Edit</SidebarLink>
+      <SidebarLink href="#delete-portal-clients-clientid-webhooks-endpointid" method="DELETE">Delete</SidebarLink>
+      <SidebarLink href="#patch-portal-clients-clientid-webhooks-endpointid-enabled" method="PATCH">Toggle</SidebarLink>
+      <SidebarLink href="#post-portal-clients-clientid-webhooks-endpointid-secret-rotate" method="POST">Rotate secret</SidebarLink>
+      <SidebarLink href="#post-portal-clients-clientid-webhooks-endpointid-stores-storeid" method="POST">Assign store</SidebarLink>
+      <SidebarLink href="#delete-portal-clients-clientid-webhooks-endpointid-stores-storeid" method="DELETE">Remove store</SidebarLink>
+    </SidebarGroup>
+  </Fragment>
+
+  <!-- Header -->
+  <section id="overview" class="scroll-mt-24">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">Self-service · Web portal</p>
+    <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Portal — API Reference
+    </h1>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      These endpoints power the merchant self-service web portal. They allow managing integration API Keys,
+      configuring stores, and managing webhook endpoints without requiring intervention from the BipBip team.
+    </p>
+    <p class="mt-3 text-neutral-600 dark:text-neutral-400">
+      Unlike the <a href="/en/api" class="text-bipbip-red hover:underline">public REST API</a> (which uses
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Api-Key</code>),
+      the portal uses Bearer JWT authentication obtained through an SSO exchange with BackOffice.
+    </p>
+
+    <Callout type="info">
+      <Fragment slot="title">Base URL</Fragment>
+      All endpoints are relative to
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1.5 py-0.5 text-sm font-mono">https://api.bipbip.com</code>.
+      Portal routes are prefixed with <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">/portal/</code>.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Auth -->
+  <section id="auth" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Portal Authentication
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      The Portal uses JWT Bearer authentication, separate from the integration API Key. The flow is an internal SSO:
+    </p>
+
+    <ol class="mt-4 space-y-2 text-sm text-neutral-600 dark:text-neutral-400 list-decimal pl-5">
+      <li>
+        <strong><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">POST /auth/exchange</code></strong>
+        — exchanges the signed exchange token issued by BackOffice for an <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">accessToken</code> +
+        <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">refreshToken</code>.
+        Body: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">{"{"} exchangeToken {"}"}</code>.
+        Responds 200 with <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">{"{"} accessToken, refreshToken, expiresIn {"}"}</code>.
+      </li>
+      <li>
+        <strong><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">POST /auth/refresh</code></strong>
+        — renews the access token using the refresh token. Body: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">{"{"} refreshToken {"}"}</code>.
+      </li>
+      <li>
+        <strong><code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">POST /auth/logout</code></strong>
+        — revokes the refresh token. Body: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">{"{"} refreshToken {"}"}</code>. Responds 204.
+      </li>
+    </ol>
+
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      All portal endpoints require the following header:
+    </p>
+    <pre class="mt-3 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code><span class="text-green-700 dark:text-green-400">Authorization: Bearer &lt;accessToken&gt;</span></code></pre>
+
+    <Callout type="info">
+      <Fragment slot="title">Organization isolation</Fragment>
+      A portal user can only manage the integrator clients that belong to the Business Legal Entities
+      assigned to their account. Accessing a <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">clientId</code> outside that scope returns 404.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Identity -->
+  <section id="identity" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Identity
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Probe endpoint to validate that the access token is still active and to retrieve the user context
+      (userId, email, BLE ids) without having to parse the JWT on the client side.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="GET"
+        path="/portal/me"
+        description="Validates the access token and returns the authenticated user's claims: userId, email, and bleIds (IDs of the accessible Business Legal Entities). Useful for the SPA on boot to verify an active session and hydrate context. Responds 200."
+        responseCode={meResponse}
+      />
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- API Keys -->
+  <section id="api-keys" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      API Keys
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Manage the integrator client's API Keys. Supports multiple keys per client for different environments
+      (prod, ci, staging). Keys are revoked individually and the full history, including revoked keys, is listed.
+    </p>
+
+    <Callout type="warning">
+      <Fragment slot="title">The plainKey is shown just once</Fragment>
+      The full API Key value (<code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">plainKey</code>)
+      is returned <strong>only on creation or rotation</strong>. Subsequent GET requests return only the
+      public prefix (12 characters) for identification. <strong>Store it immediately in a secure location</strong> — there is no way to retrieve it afterwards.
+    </Callout>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="GET"
+        path="/portal/clients/{clientId}/api-keys"
+        description="Lists all API Keys for the client, including revoked ones (for audit history). Returns only the public prefix and timestamps (createdAt, lastUsedAt, revokedAt). The plain text value is NOT included. Responds 200."
+        responseCode={listApiKeysResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/portal/clients/{clientId}/api-keys"
+        description="Creates a new API Key for the client. Body: { name }. The plainKey field is returned ONLY ONCE in this response. The key becomes active immediately and is used via the X-Bipbip-Api-Key header on /api/v1/*. Responds 201."
+        responseCode={createApiKeyResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/portal/clients/{clientId}/api-keys/{keyId}/rotate"
+        description="Atomic operation: revokes the current key and immediately issues a new one with the same name. The new plainKey is returned ONLY ONCE. The old key is invalidated immediately (cache cleared). If the key was already revoked, returns 409. Responds 201."
+        responseCode={rotateApiKeyResponse}
+      />
+
+      <EndpointCard
+        method="DELETE"
+        path="/portal/clients/{clientId}/api-keys/{keyId}"
+        description="Permanently revokes the API Key. The key stops being valid immediately. This operation is NOT reversible. To regain access, create a new key via POST. If the key was already revoked, returns 409. Responds 204 (no body)."
+      />
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Stores -->
+  <section id="stores" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Stores
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      View and edit the configuration of stores assigned to the client. Adding and removing stores is managed
+      from BackOffice — the portal only allows editing two fields: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">remoteId</code>
+      and <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">autoAccept</code>.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="GET"
+        path="/portal/clients/{clientId}/stores"
+        description="Lists all stores assigned to the client with their current configuration: storeId, brandId, remoteId, autoAccept, and assignedAt. Responds 200."
+        responseCode={listStoresResponse}
+      />
+
+      <EndpointCard
+        method="PATCH"
+        path="/portal/clients/{clientId}/stores/{storeId}"
+        description="Updates remoteId and/or autoAccept with PATCH semantics: only non-null provided fields are updated. If both are null, it is a no-op (returns 200 with the current shape). If the new remoteId collides with another store belonging to the same client, returns 409. Responds 200."
+        responseCode={updateStoreResponse}
+      />
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Webhooks -->
+  <section id="webhooks" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Webhooks
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Configure the endpoints that receive BipBip webhooks. Each endpoint has a base URL, subscribed events,
+      and an HMAC secret for signature verification. Endpoints are assigned to stores to control which store dispatches to which URL.
+    </p>
+    <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+      Available events: <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.created</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">order.cancelled</code>.
+    </p>
+
+    <Callout type="warning">
+      <Fragment slot="title">The HMAC secret is shown just once</Fragment>
+      The <code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">plainSecret</code>
+      is returned <strong>only when the endpoint is created or when the secret is rotated</strong>. Store it immediately
+      in your system to verify <code class="rounded bg-amber-100 dark:bg-amber-500/10 px-1 py-0.5 text-xs font-mono">X-Bipbip-Signature-256</code> signatures.
+      After this call, there is no way to retrieve it — you can only rotate to a new one.
+    </Callout>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="GET"
+        path="/portal/clients/{clientId}/webhooks"
+        description="Lists all webhook endpoints for the client, including disabled ones. The response does NOT include HMAC secrets — only public metadata (name, url, events, timeouts, circuitState, timestamps). Responds 200."
+        responseCode={listWebhooksResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/portal/clients/{clientId}/webhooks"
+        description="Creates a new endpoint. Body: { name, url (base URL), subscribedEvents[], maxRetries?, timeoutSeconds?, acceptanceTimeoutMinutes? }. The plainSecret field is returned ONLY ONCE. The URL is a base URL — the dispatcher composes POST {url}/v1/order/{remoteId} when dispatching. Responds 201."
+        responseCode={createWebhookResponse}
+      />
+
+      <EndpointCard
+        method="PUT"
+        path="/portal/clients/{clientId}/webhooks/{endpointId}"
+        description="Updates the endpoint's name, base URL, and subscribedEvents (full PUT replacement). To rotate the secret use POST .../secret/rotate. To enable/disable use PATCH .../enabled. Timeouts and retry settings are not editable from the portal. Responds 200."
+        responseCode={listWebhooksResponse}
+      />
+
+      <EndpointCard
+        method="DELETE"
+        path="/portal/clients/{clientId}/webhooks/{endpointId}"
+        description="Permanently deletes the endpoint. Store assignments are cancelled in cascade. This operation is NOT reversible. If you only want to pause delivery, use PATCH .../enabled with enabled: false. Responds 204 (no body)."
+      />
+
+      <EndpointCard
+        method="PATCH"
+        path="/portal/clients/{clientId}/webhooks/{endpointId}/enabled"
+        description="Enables or disables the endpoint (idempotent toggle). Body: { enabled: true|false }. When disabled, the dispatcher skips the endpoint and marks the delivery as Failed with 'Endpoint is disabled'. Useful for maintenance without losing configuration. Responds 204 (no body)."
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/portal/clients/{clientId}/webhooks/{endpointId}/secret/rotate"
+        description="Rotates the HMAC secret with a 24h dual window. The new plainSecret is returned ONLY ONCE. BipBip signs with the new secret immediately; the previous secret remains valid until previousValidUntil so that in-flight retries do not fail. If an active rotation exists within the 24h window, returns 409. Responds 201."
+        responseCode={rotateSecretResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/portal/clients/{clientId}/webhooks/{endpointId}/stores/{storeId}"
+        description="Assigns a store to the endpoint (idempotent). Required body: { brandId: integer } — mandatory to validate that the store belongs to that client's brand (guards against cross-brand assignments). The dispatcher uses this assignment to determine which URL to dispatch each order to. If the assignment already exists, returns 204 without error (no-op). Responds 204 (no body)."
+      />
+
+      <EndpointCard
+        method="DELETE"
+        path="/portal/clients/{clientId}/webhooks/{endpointId}/stores/{storeId}"
+        description="Removes the store assignment from the endpoint. If the store was not assigned, returns 204 anyway (idempotent). Responds 204 (no body)."
+      />
+    </div>
+  </section>
+</DocsLayout>

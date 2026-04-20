@@ -1,0 +1,23 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+const current = Astro.currentLocale ?? 'es';
+const other = current === 'es' ? 'en' : 'es';
+const otherLabel = other.toUpperCase();
+
+// Strip the /en/ prefix from current pathname to get the locale-agnostic path.
+const pathWithoutLocale = Astro.url.pathname.replace(/^\/en(\/|$)/, '/') || '/';
+const targetUrl = getRelativeLocaleUrl(other, pathWithoutLocale);
+---
+
+<a
+  href={targetUrl}
+  aria-label={`Switch to ${other === 'en' ? 'English' : 'Español'}`}
+  class="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 bg-neutral-100 dark:bg-surface-dark-elevated hover:bg-neutral-200 dark:hover:bg-border-dark text-neutral-600 dark:text-neutral-400 transition-colors duration-150 text-xs font-semibold"
+>
+  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/>
+  </svg>
+  <span class="uppercase tracking-wide">{otherLabel}</span>
+</a>

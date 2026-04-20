@@ -1,5 +1,12 @@
 ---
 import { LogoPrimaryDefault } from '../icons';
+import { useTranslations } from '../../i18n/ui';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+const t = useTranslations(Astro.currentLocale);
+const cta = t.ctaFooter;
+const locale = Astro.currentLocale ?? 'es';
+const url = (path: string) => getRelativeLocaleUrl(locale, path);
 ---
 
 <section class="relative overflow-hidden bg-gradient-to-br from-bipbip-red to-bipbip-red-dark py-24">
@@ -23,25 +30,23 @@ import { LogoPrimaryDefault } from '../icons';
     </div>
 
     <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-      Ready to build with BipBip?
+      {cta.title}
     </h2>
     <p class="mt-4 text-lg text-white/80">
-      Join developers building the future of food delivery in Honduras.
+      {cta.subtitle}
     </p>
     <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
       <a
-        href="/docs"
+        href={url('/docs')}
         class="shimmer-btn relative rounded-lg bg-white px-6 py-3 text-sm font-semibold text-bipbip-red shadow-lg transition-all duration-200 hover:bg-neutral-100 hover:-translate-y-0.5 overflow-hidden"
       >
-        <span class="relative z-10">Start Building</span>
+        <span class="relative z-10">{cta.readGuide}</span>
       </a>
       <a
-        href="https://bipbip.hn"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="mailto:integraciones@bipbip.com"
         class="rounded-lg border border-white/30 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:border-white/60 hover:-translate-y-0.5"
       >
-        Contact Sales
+        integraciones@bipbip.com
       </a>
     </div>
   </div>

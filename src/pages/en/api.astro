@@ -1,0 +1,381 @@
+---
+import DocsLayout from '../../components/docs/DocsLayout.astro';
+import SidebarGroup from '../../components/docs/SidebarGroup.astro';
+import SidebarLink from '../../components/docs/SidebarLink.astro';
+import EndpointCard from '../../components/docs/EndpointCard.astro';
+import Callout from '../../components/docs/Callout.astro';
+
+// ── Real response bodies from swagger ───────────────────────────────────────
+
+const acceptResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Order accepted"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"accepted"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"acceptedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:12Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>
+  }
+}`;
+
+const rejectResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Order rejected"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"rejected"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"rejectedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:30Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"reason"</span>: <span class="text-green-700 dark:text-green-400">"Producto agotado"</span>
+  }
+}`;
+
+const statusResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Status updated"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"preparing"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"changedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:47:00Z"</span>
+  }
+}`;
+
+const getOrderResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"storeId"</span>: <span class="text-amber-600 dark:text-amber-400">42</span>,
+    <span class="text-blue-600 dark:text-blue-400">"brandId"</span>: <span class="text-amber-600 dark:text-amber-400">7</span>,
+    <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"preparing"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"merchantStatusReason"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"receivedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:42:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"acceptedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:12Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"rejectedAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"preparingAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:47:00Z"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"readyAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"handedOverAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"cancelledAt"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+    <span class="text-blue-600 dark:text-blue-400">"history"</span>: [
+      {
+        <span class="text-blue-600 dark:text-blue-400">"fromStatus"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+        <span class="text-blue-600 dark:text-blue-400">"toStatus"</span>: <span class="text-green-700 dark:text-green-400">"pending"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"changedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:42:00Z"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"actorType"</span>: <span class="text-green-700 dark:text-green-400">"system"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"actorId"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>,
+        <span class="text-blue-600 dark:text-blue-400">"reason"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
+      }
+    ]
+  }
+}`;
+
+const listOrdersResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"message"</span>: <span class="text-green-700 dark:text-green-400">"Ok"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"data"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"items"</span>: [
+      {
+        <span class="text-blue-600 dark:text-blue-400">"orderKey"</span>: <span class="text-green-700 dark:text-green-400">"ord_7h3nXpQa2KvLmN9F"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"storeId"</span>: <span class="text-amber-600 dark:text-amber-400">42</span>,
+        <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-green-700 dark:text-green-400">"preparing"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"receivedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:42:00Z"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"acceptedAt"</span>: <span class="text-green-700 dark:text-green-400">"2026-04-11T15:44:12Z"</span>,
+        <span class="text-blue-600 dark:text-blue-400">"remoteOrderId"</span>: <span class="text-green-700 dark:text-green-400">"POS-2026-04-11-00142"</span>
+      }
+    ],
+    <span class="text-blue-600 dark:text-blue-400">"nextCursor"</span>: <span class="text-green-700 dark:text-green-400">"eyJsYXN0SWQiOjE3fQ"</span>,
+    <span class="text-blue-600 dark:text-blue-400">"hasMore"</span>: <span class="text-amber-600 dark:text-amber-400">true</span>
+  }
+}`;
+
+const errorResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"type"</span>: <span class="text-green-700 dark:text-green-400">"https://errors.bipbip.com/not-found"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"title"</span>: <span class="text-green-700 dark:text-green-400">"Order not found"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"detail"</span>: <span class="text-green-700 dark:text-green-400">"The order ord_xxx does not exist or does not belong to the authenticated client."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-amber-600 dark:text-amber-400">404</span>,
+  <span class="text-blue-600 dark:text-blue-400">"traceId"</span>: <span class="text-green-700 dark:text-green-400">"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"meta"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
+}`;
+
+const validationErrorResponse = `{
+  <span class="text-blue-600 dark:text-blue-400">"type"</span>: <span class="text-green-700 dark:text-green-400">"https://errors.bipbip.com/validation"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"title"</span>: <span class="text-green-700 dark:text-green-400">"Validation failed"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"detail"</span>: <span class="text-green-700 dark:text-green-400">"One or more validation errors occurred."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-amber-600 dark:text-amber-400">422</span>,
+  <span class="text-blue-600 dark:text-blue-400">"traceId"</span>: <span class="text-green-700 dark:text-green-400">"00-abc..."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"meta"</span>: {
+    <span class="text-blue-600 dark:text-blue-400">"errors"</span>: {
+      <span class="text-blue-600 dark:text-blue-400">"reasonCode"</span>: [<span class="text-green-700 dark:text-green-400">"The ReasonCode field is required."</span>]
+    }
+  }
+}`;
+
+const idempotencyConflict = `{
+  <span class="text-blue-600 dark:text-blue-400">"type"</span>: <span class="text-green-700 dark:text-green-400">"https://errors.bipbip.com/idempotency-conflict"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"title"</span>: <span class="text-green-700 dark:text-green-400">"Idempotency conflict"</span>,
+  <span class="text-blue-600 dark:text-blue-400">"detail"</span>: <span class="text-green-700 dark:text-green-400">"Idempotency-Key reused with a different request body."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"status"</span>: <span class="text-amber-600 dark:text-amber-400">409</span>,
+  <span class="text-blue-600 dark:text-blue-400">"traceId"</span>: <span class="text-green-700 dark:text-green-400">"00-abc..."</span>,
+  <span class="text-blue-600 dark:text-blue-400">"meta"</span>: <span class="text-purple-600 dark:text-purple-400">null</span>
+}`;
+---
+
+<DocsLayout title="REST API Reference">
+  <Fragment slot="sidebar">
+    <SidebarGroup title="First">
+      <SidebarLink href="#overview">Introduction</SidebarLink>
+      <SidebarLink href="#auth">Authentication</SidebarLink>
+      <SidebarLink href="#idempotency">Idempotency-Key</SidebarLink>
+      <SidebarLink href="#rate-limits">Rate limits</SidebarLink>
+      <SidebarLink href="#errors">Errors</SidebarLink>
+    </SidebarGroup>
+
+    <SidebarGroup title="Orders">
+      <SidebarLink href="#post-api-v1-orders-orderkey-accept" method="POST">Accept</SidebarLink>
+      <SidebarLink href="#post-api-v1-orders-orderkey-reject" method="POST">Reject</SidebarLink>
+      <SidebarLink href="#post-api-v1-orders-orderkey-status" method="POST">Update status</SidebarLink>
+      <SidebarLink href="#get-api-v1-orders-orderkey" method="GET">Get order</SidebarLink>
+      <SidebarLink href="#get-api-v1-orders" method="GET">List orders</SidebarLink>
+    </SidebarGroup>
+  </Fragment>
+
+  <!-- Header -->
+  <section id="overview" class="scroll-mt-24">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-bipbip-red">Inbound · You call it</p>
+    <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      REST API Reference
+    </h1>
+    <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+      Your POS calls BipBip to accept, reject, advance the status, and query orders. This is the counterpart
+      of the <a href="/en/webhook" class="text-bipbip-red hover:underline">Webhook Spec</a>: once BipBip delivers
+      an order to you, use this API to manage its lifecycle.
+    </p>
+
+    <Callout type="info">
+      <Fragment slot="title">Base URL</Fragment>
+      All endpoints are relative to
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1.5 py-0.5 text-sm font-mono">https://api.bipbip.com</code>.
+      Paths carry the prefix <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">/api/v1/</code> with versioning in the path.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Auth -->
+  <section id="auth" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Authentication
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Every request must include the
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">X-Bipbip-Api-Key</code>
+      header with the value provided by the BipBip team during onboarding. We do not use Bearer tokens or OAuth for this API.
+      To obtain and manage your API Keys, use the <a href="/en/portal" class="text-bipbip-red hover:underline">self-service portal</a>.
+    </p>
+
+    <pre class="mt-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code><span class="text-neutral-400 dark:text-neutral-500"># Every call must include this header</span>
+<span class="text-bipbip-red dark:text-bipbip-yellow">curl</span> <span class="text-neutral-500 dark:text-neutral-400">-H</span> <span class="text-green-700 dark:text-green-400">"X-Bipbip-Api-Key: &lt;your-api-key&gt;"</span> <span class="text-neutral-500 dark:text-neutral-400">\</span>
+     <span class="text-green-700 dark:text-green-400">https://api.bipbip.com/api/v1/Orders/&lt;orderKey&gt;</span></code></pre>
+
+    <Callout type="warning">
+      <Fragment slot="title">Protect your API Key</Fragment>
+      Do not expose it in the frontend, in public repositories, or in client-side bundles.
+      Store it in server-side environment variables and never commit it.
+    </Callout>
+
+    <Callout type="danger">
+      <Fragment slot="title">Case-sensitive paths</Fragment>
+      The server <strong>does not</strong> normalize casing. The segment <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">/Orders/</code>
+      must use a <strong>capital O</strong> literally — <code class="rounded bg-red-100 dark:bg-red-500/10 px-1 py-0.5 text-xs font-mono">/orders/</code> returns 404.
+      Use the exact casing of each path documented here.
+    </Callout>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Idempotency -->
+  <section id="idempotency" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Idempotency-Key
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      All mutations (<code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/accept</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/reject</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">/status</code>)
+      <strong>require</strong> the <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1.5 py-0.5 text-sm font-mono">Idempotency-Key</code> header.
+      The value must be a unique UUID v4 per logical attempt.
+    </p>
+
+    <ul class="mt-4 space-y-2 text-sm text-neutral-600 dark:text-neutral-400 list-disc pl-5">
+      <li>Same key + same body within 24h → BipBip returns the cached response without re-executing.</li>
+      <li>Same key + different body → HTTP 409 Conflict.</li>
+      <li>New key → request processed normally.</li>
+      <li>Missing header on mutations → HTTP 422 Unprocessable Entity.</li>
+    </ul>
+
+    <pre class="mt-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={idempotencyConflict} /></pre>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Rate limits -->
+  <section id="rate-limits" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Rate limits
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Limits are applied per API Key and are active on all endpoints.
+      If exceeded, you receive HTTP 429 — implement exponential backoff with jitter in your client.
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Window</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Limit</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Strategy</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Fixed window</td>
+            <td class="px-4 py-3 font-mono text-sm text-neutral-900 dark:text-white">100 requests / min</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Resets every 60s</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Sliding window</td>
+            <td class="px-4 py-3 font-mono text-sm text-neutral-900 dark:text-white">1,000 requests / hour</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Evaluated continuously</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Errors -->
+  <section id="errors" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Errors
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      The API follows the <strong>RFC 7807 Problem Details</strong> format. All errors return a JSON body with the fields
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">type</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">title</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">detail</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">status</code>,
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">traceId</code> and
+      <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">meta</code>.
+      For validation errors (422), <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">meta</code>
+      includes a field → message list map.
+    </p>
+
+    <div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark">
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-50 dark:bg-surface-dark-elevated">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Code</th>
+            <th class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">Meaning</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 dark:divide-border-dark">
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">401 Unauthorized</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Missing or invalid API Key</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">404 Not Found</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">orderKey does not exist or does not belong to the authenticated client</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">409 Conflict</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Idempotency-Key reused with a different body, order in wrong state for the transition, or invalid transition</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">422 Unprocessable Entity</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Invalid data in the body or missing <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">Idempotency-Key</code> header. The <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-[11px] font-mono">meta.errors</code> field details the problematic fields.</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">429 Too Many Requests</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Rate limit exceeded — implement exponential backoff with jitter</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-mono text-xs text-neutral-900 dark:text-white">5xx</td>
+            <td class="px-4 py-3 text-neutral-600 dark:text-neutral-400">Server error — retry with backoff</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mt-8 text-lg font-semibold text-neutral-900 dark:text-white">Generic error (401, 404, 409, 429)</h3>
+    <pre class="mt-3 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={errorResponse} /></pre>
+
+    <h3 class="mt-6 text-lg font-semibold text-neutral-900 dark:text-white">Validation error (422)</h3>
+    <pre class="mt-3 overflow-x-auto rounded-lg border border-neutral-200 dark:border-border-dark bg-neutral-50 dark:bg-surface-dark-elevated p-4 text-sm font-mono"><code set:html={validationErrorResponse} /></pre>
+  </section>
+
+  <hr class="my-12 border-neutral-200 dark:border-border-dark" />
+
+  <!-- Endpoints: Orders -->
+  <section id="orders" class="scroll-mt-24">
+    <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+      Orders
+    </h2>
+    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+      Manage the lifecycle of orders delivered to you by BipBip via webhook. Mutation endpoints
+      require <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">X-Bipbip-Api-Key</code>
+      and <code class="rounded bg-neutral-100 dark:bg-surface-dark-elevated px-1 py-0.5 text-xs font-mono">Idempotency-Key</code>.
+    </p>
+
+    <div class="mt-6 space-y-4">
+      <EndpointCard
+        method="POST"
+        path="/api/v1/Orders/{orderKey}/accept"
+        description="Accept an order after responding HTTP 200 to the creation webhook. Transitions the order from pending to accepted, cancels the acceptance timeout job, and publishes the order.accepted_by_external_merchant.v1 event. Body: { remoteOrderId?, estimatedPrepTimeMinutes? }. Idempotent: same Idempotency-Key + same body → cached response. Returns 202."
+        responseCode={acceptResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/api/v1/Orders/{orderKey}/reject"
+        description="Reject an order you can't fulfill. Transitions the order from pending to rejected (terminal). Requires a reasonCode (int). Body: { reasonCode*, reason?, notes? }. Use standard codes like OUT_OF_STOCK, STORE_CLOSED, or TOO_BUSY. Publishes order.rejected_by_external_merchant.v1. Idempotent. Returns 202."
+        responseCode={rejectResponse}
+      />
+
+      <EndpointCard
+        method="POST"
+        path="/api/v1/Orders/{orderKey}/status"
+        description="Advance the state of an accepted order. Valid transitions: accepted → preparing → ready → handedOver. Also allows cancellation (→ cancelled). Body: { newStatus* (MerchantStatus), estimatedReadyAt? }. Once Ready, BipBip dispatches to the driver automatically. Publishes order.status_changed_by_external_merchant.v1. Returns 202."
+        responseCode={statusResponse}
+      />
+
+      <EndpointCard
+        method="GET"
+        path="/api/v1/Orders/{orderKey}"
+        description="Query the current state of an order by its orderKey. Returns the full order snapshot: current status, timestamps for each transition (receivedAt, acceptedAt?, rejectedAt?, preparingAt?, readyAt?, handedOverAt?, cancelledAt?) and complete change history. Only returns orders belonging to the authenticated client. Does not require Idempotency-Key (read-only). Returns 200."
+        responseCode={getOrderResponse}
+      />
+
+      <EndpointCard
+        method="GET"
+        path="/api/v1/Orders"
+        description="List orders for the authenticated client with opaque cursor pagination. Query params: Cursor?, PageSize? (max 100), Status?, FromDate?, ToDate?. Ordered by creation date descending. Pass nextCursor from the previous response to fetch the next page. Returns 200."
+        responseCode={listOrdersResponse}
+      />
+    </div>
+
+    <Callout type="info">
+      <Fragment slot="title">State machine</Fragment>
+      Valid transitions from the REST API are:
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">pending</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">accepted</code> /
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">rejected</code>,
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">accepted</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">preparing</code>,
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">preparing</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">ready</code> →
+      <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">handedOver</code>.
+      See the <a href="/en/docs#glossary" class="font-medium underline">glossary</a> for details.
+      Note: <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">status</code>
+      values in the REST API are camelCase lowercase (e.g. <code class="rounded bg-blue-100 dark:bg-blue-500/10 px-1 py-0.5 text-xs font-mono">handedOver</code>),
+      unlike webhooks which use PascalCase.
+    </Callout>
+  </section>
+</DocsLayout>
