@@ -18,10 +18,7 @@ const primaryLinks = [
 ];
 
 // Secondary links — only on xl+ (avoid crowding on lg)
-const secondaryLinks = [
-  { href: url('/portal'), label: t.nav.portal },
-  { href: url('/changelog'), label: t.nav.changelog },
-];
+const secondaryLinks: { href: string; label: string }[] = [];
 
 const allLinks = [...primaryLinks, ...secondaryLinks];
 ---

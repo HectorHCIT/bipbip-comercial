@@ -63,8 +63,6 @@ const localePrefix = getRelativeLocaleUrl(locale, '/').replace(/\/$/, '');
     { type: "page", title: "Guía de integración", url: "/docs", keywords: "docs guia quickstart integration" },
     { type: "page", title: "Webhook Spec", url: "/webhook", keywords: "webhook outbound order.created order.cancelled" },
     { type: "page", title: "REST API Reference", url: "/api", keywords: "api rest endpoints reference" },
-    { type: "page", title: "Portal — Autogestión", url: "/portal", keywords: "portal autogestión api keys webhooks tiendas stores merchant" },
-    { type: "page", title: "Changelog", url: "/changelog", keywords: "changelog updates versions releases" },
     { type: "docs", title: "Quickstart", url: "/docs#quickstart", keywords: "primeros pasos quickstart intro" },
     { type: "docs", title: "Precondiciones", url: "/docs#preconditions", keywords: "hmac secret api key remoteid base url onboarding" },
     { type: "docs", title: "Los 4 pasos", url: "/docs#steps", keywords: "pasos webhook verify ack accept" },
@@ -85,20 +83,9 @@ const localePrefix = getRelativeLocaleUrl(locale, '/').replace(/\/$/, '');
     { type: "endpoint", title: "POST /api/v1/orders/:orderKey/status", url: "/api#post-api-v1-orders-orderkey-status", keywords: "status preparing ready transicion estado", method: "POST" },
     { type: "endpoint", title: "GET /api/v1/Orders/:orderKey", url: "/api#get-api-v1-orders-orderkey", keywords: "get orden consulta reconciliar", method: "GET" },
     { type: "endpoint", title: "GET /api/v1/Orders", url: "/api#get-api-v1-orders", keywords: "listar ordenes cursor paginacion", method: "GET" },
-    { type: "endpoint", title: "GET /portal/me", url: "/portal#get-portal-me", keywords: "portal identity probe claims access token", method: "GET" },
-    { type: "endpoint", title: "GET /portal/clients/:clientId/api-keys", url: "/portal#get-portal-clients-clientid-api-keys", keywords: "portal api keys listar", method: "GET" },
-    { type: "endpoint", title: "POST /portal/clients/:clientId/api-keys", url: "/portal#post-portal-clients-clientid-api-keys", keywords: "portal api key crear create", method: "POST" },
-    { type: "endpoint", title: "POST /portal/clients/:clientId/api-keys/:keyId/rotate", url: "/portal#post-portal-clients-clientid-api-keys-keyid-rotate", keywords: "portal api key rotar rotate", method: "POST" },
-    { type: "endpoint", title: "DELETE /portal/clients/:clientId/api-keys/:keyId", url: "/portal#delete-portal-clients-clientid-api-keys-keyid", keywords: "portal api key revocar delete", method: "DELETE" },
-    { type: "endpoint", title: "GET /portal/clients/:clientId/stores", url: "/portal#get-portal-clients-clientid-stores", keywords: "portal tiendas stores listar", method: "GET" },
-    { type: "endpoint", title: "PATCH /portal/clients/:clientId/stores/:storeId", url: "/portal#patch-portal-clients-clientid-stores-storeid", keywords: "portal tienda store remoteid autoaccept", method: "PATCH" },
-    { type: "endpoint", title: "GET /portal/clients/:clientId/webhooks", url: "/portal#get-portal-clients-clientid-webhooks", keywords: "portal webhooks endpoints listar", method: "GET" },
-    { type: "endpoint", title: "POST /portal/clients/:clientId/webhooks", url: "/portal#post-portal-clients-clientid-webhooks", keywords: "portal webhook endpoint crear create secret hmac", method: "POST" },
-    { type: "endpoint", title: "POST /portal/clients/:clientId/webhooks/:endpointId/secret/rotate", url: "/portal#post-portal-clients-clientid-webhooks-endpointid-secret-rotate", keywords: "portal webhook secret rotar rotate hmac dual window", method: "POST" },
-    { type: "changelog", title: "v1.0.0 \u2014 Merchant Integration API", url: "/changelog", keywords: "launch piloto v1 webhook rest" },
   ];
 
-  var GROUP_ORDER = ["page", "docs", "endpoint", "changelog"];
+  var GROUP_ORDER = ["page", "docs", "endpoint"];
 
   var METHOD_COLORS = {
     GET: "bg-green-500/10 text-green-600 dark:text-green-400",
